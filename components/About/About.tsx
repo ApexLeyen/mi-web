@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { Target, Eye, Award, Code2, Smartphone, Globe } from "lucide-react";
 import styles from "./About.module.css";
 
@@ -13,7 +13,7 @@ const skills = [
   { icon: <Code2 size={18} />, name: "Bases de Datos" },
 ];
 
-const fadeUp = {
+const fadeUp: Variants = {
   hidden: { opacity: 0, y: 40 },
   visible: (i: number) => ({
     opacity: 1,
