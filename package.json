@@ -5,9 +5,9 @@
   "scripts": {
     "dev": "cross-env NEXT_TURBOPACK=0 next dev",
     "build": "next build",
-    "open-next": "open-next build",
-    "preview": "wrangler dev .open-next/worker.js",
-    "deploy": "npm run build && npm run open-next && wrangler deploy",
+    "open-next": "opennextjs-cloudflare build",
+    "preview": "opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare deploy",
     "lint": "eslint"
   },
   "dependencies": {
