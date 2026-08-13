@@ -1,0 +1,18 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "my-web",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2024-12-30",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "my-web-db",
+      "database_id": "595d41b9-b9a0-49d1-af56-1b778f9b3835"
+    }
+  ]
+}
