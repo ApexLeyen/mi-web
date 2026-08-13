@@ -1,3 +1,4 @@
+# Configuration for Muñeco Tecnology Deployment
 name = "my-web"
 main = ".open-next/worker.js"
 compatibility_date = "2026-05-01"
