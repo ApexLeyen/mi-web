@@ -333,6 +333,16 @@ section {
    RESPONSIVE UTILITIES
    ============================================ */
 @media (max-width: 768px) {
-  section { padding: 70px 0; }
+  section { padding: 60px 0; }
   .container { padding: 0 16px; }
+  .section-header { margin-bottom: 40px; }
+  .btn { padding: 10px 22px; font-size: 0.9rem; }
+}
+
+@media (max-width: 480px) {
+  section { padding: 45px 0; }
+  .container { padding: 0 14px; }
+  .section-header { margin-bottom: 28px; }
+  .section-tag { padding: 4px 14px; font-size: 0.72rem; letter-spacing: 1px; }
+  .section-title { font-size: clamp(1.6rem, 7vw, 2.2rem); }
 }

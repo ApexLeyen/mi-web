@@ -246,5 +246,37 @@
 .modalDownload { width: 100%; justify-content: center; }
 
 @media (max-width: 600px) {
-  .grid { grid-template-columns: 1fr; }
+  .searchBox {
+    max-width: 100%;
+    padding: 10px 16px;
+  }
+  .filters {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 6px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .filterBtn {
+    flex-shrink: 0;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .modalOverlay {
+    padding: 12px;
+  }
+  .modal {
+    padding: 20px 16px;
+    border-radius: 18px !important;
+  }
+  .modalHeader {
+    gap: 12px;
+  }
+  .modalIcon {
+    font-size: 2.5rem;
+  }
+  .modalTitle {
+    font-size: 1.25rem;
+  }
 }

@@ -151,8 +151,39 @@
   padding-left: 32px;
 }
 
+.logoImg {
+  height: 46px;
+  width: auto;
+  transition: var(--transition);
+}
+
+.logoTag {
+  margin-left: 10px;
+  margin-bottom: 0 !important;
+  display: inline-flex;
+  align-items: center;
+}
+
+.adminBtn {
+  font-size: 0.85rem !important;
+  padding: 8px 16px !important;
+}
+
 @media (max-width: 900px) {
   .desktopNav { display: none; }
   .ctaBtn { display: none; }
+  .adminBtn { display: none; }
   .menuBtn { display: flex; }
+}
+
+@media (max-width: 640px) {
+  .logoTag {
+    display: none;
+  }
+  .logoImg {
+    height: 38px;
+  }
+  .container {
+    padding: 0 16px;
+  }
 }

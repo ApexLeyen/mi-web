@@ -217,14 +217,68 @@
 }
 
 @media (max-width: 900px) {
+  .hero {
+    min-height: auto;
+    padding-top: 110px;
+    padding-bottom: 60px;
+  }
+
   .content {
     grid-template-columns: 1fr;
-    gap: 48px;
+    gap: 40px;
     text-align: center;
   }
 
-  .subtitle { max-width: 100%; }
-  .buttons { justify-content: center; }
-  .stats { justify-content: center; }
-  .visualSide { display: none; }
+  .title {
+    font-size: clamp(2.2rem, 7vw, 3.8rem);
+  }
+
+  .subtitle {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .buttons {
+    justify-content: center;
+  }
+
+  .stats {
+    justify-content: center;
+  }
+
+  .visualSide {
+    display: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .hero {
+    padding-top: 95px;
+    padding-bottom: 40px;
+  }
+
+  .title {
+    font-size: clamp(1.9rem, 8.5vw, 2.8rem);
+  }
+
+  .buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .buttons a, .buttons button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .statCard {
+    padding: 10px 12px;
+  }
 }

@@ -47,14 +47,6 @@ export default async function Home() {
 
   return (
     <>
-      <a href="/admin/login" className="btn btn-primary" style={{
-        position: 'fixed',
-        top: '1rem',
-        right: '1rem',
-        padding: '0.5rem 1rem',
-        fontSize: '0.9rem',
-        zIndex: 1000,
-      }}>Admin</a>
       <Hero />
       <About />
       <AppsStore initialApps={apps} />

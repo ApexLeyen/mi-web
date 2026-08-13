@@ -36,8 +36,8 @@ export default function Navbar() {
       <div className={styles.container}>
         {/* Logo */}
         <Link href="/" className={styles.logo}>
-          <img src="/logo.png" alt="Muñeco Tecnology Logo" style={{ height: '50px', width: 'auto' }} />
-          <span className="section-tag" style={{ marginLeft: '12px' }}>✦ Muñeco Tecnology</span>
+          <img src="/logo.png" alt="Muñeco Tecnology Logo" className={styles.logoImg} />
+          <span className={`section-tag ${styles.logoTag}`}>✦ Muñeco Tecnology</span>
         </Link>
 
         {/* Desktop Nav */}
@@ -86,6 +86,10 @@ export default function Navbar() {
             Descargar Apps
           </a>
 
+          <Link href="/admin/login" className={`btn btn-secondary ${styles.adminBtn}`}>
+            Admin
+          </Link>
+
           {/* Mobile Menu Toggle */}
           <button
             className={styles.menuBtn}
@@ -121,6 +125,19 @@ export default function Navbar() {
                 {link.label}
               </motion.a>
             ))}
+            <motion.div
+              initial={{ x: -20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              style={{ padding: "16px 24px", display: "flex", gap: "12px", flexDirection: "column" }}
+            >
+              <a href="#apps" className="btn btn-primary" onClick={() => setMenuOpen(false)}>
+                Descargar Apps
+              </a>
+              <Link href="/admin/login" className="btn btn-secondary" onClick={() => setMenuOpen(false)}>
+                Panel Administrador
+              </Link>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
