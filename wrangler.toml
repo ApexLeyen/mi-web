@@ -10,4 +10,4 @@ binding = "ASSETS"
 [[d1_databases]]
 binding = "DB"
 database_name = "my-web-db"
-database_id = "YOUR_DATABASE_ID_HERE"
+database_id = "595d41b9-b9a0-49d1-af56-1b778f9b3835"
