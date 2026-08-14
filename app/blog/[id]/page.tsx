@@ -103,7 +103,13 @@ export default function BlogPostPage() {
         
         <article>
           <header style={{ marginBottom: '40px' }}>
-            <div style={{ fontSize: '4rem', marginBottom: '20px' }}>{post.emoji}</div>
+            {(post.emoji.startsWith("http") || post.emoji.startsWith("/") || post.emoji.startsWith("data:image")) ? (
+              <div style={{ width: '100%', height: '320px', borderRadius: '16px', overflow: 'hidden', marginBottom: '24px' }}>
+                <img src={post.emoji} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+            ) : (
+              <div style={{ fontSize: '4rem', marginBottom: '20px' }}>{post.emoji}</div>
+            )}
             <h1 style={{ fontSize: '2.5rem', marginBottom: '15px' }}>{post.title}</h1>
             <div style={{ display: 'flex', gap: '15px', color: 'var(--text-muted)', fontSize: '0.9rem', alignItems: 'center' }}>
               <span style={{ background: 'var(--accent-primary)', color: '#fff', padding: '4px 12px', borderRadius: '20px' }}>

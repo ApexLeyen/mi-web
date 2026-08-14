@@ -163,7 +163,13 @@ export default function AppsStore({ initialApps }: { initialApps?: App[] }) {
                 whileHover={{ y: -8, transition: { duration: 0.2 } }}
               >
                 <div className={styles.cardTop}>
-                  <div className={styles.appIcon}>{app.icon}</div>
+                  <div className={styles.appIcon}>
+                    {(app.icon.startsWith("http") || app.icon.startsWith("/") || app.icon.startsWith("data:image")) ? (
+                      <img src={app.icon} alt={app.name} style={{ width: "100%", height: "100%", objectFit: "contain", borderRadius: "12px" }} />
+                    ) : (
+                      app.icon
+                    )}
+                  </div>
                   <span className={`badge ${statusClass[app.status]}`}>
                     {statusLabel[app.status]}
                   </span>
@@ -228,7 +234,13 @@ export default function AppsStore({ initialApps }: { initialApps?: App[] }) {
               <button className={styles.closeBtn} onClick={() => setSelected(null)} id="modal-close">✕</button>
 
               <div className={styles.modalHeader}>
-                <div className={styles.modalIcon}>{selected.icon}</div>
+                <div className={styles.modalIcon}>
+                  {(selected.icon.startsWith("http") || selected.icon.startsWith("/") || selected.icon.startsWith("data:image")) ? (
+                    <img src={selected.icon} alt={selected.name} style={{ width: "60px", height: "60px", objectFit: "contain", borderRadius: "14px" }} />
+                  ) : (
+                    selected.icon
+                  )}
+                </div>
                 <div>
                   <h3 className={styles.modalTitle}>{selected.name}</h3>
                   <span className={`badge ${statusClass[selected.status]}`}>{statusLabel[selected.status]}</span>

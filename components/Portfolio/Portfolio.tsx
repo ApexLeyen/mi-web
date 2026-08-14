@@ -50,7 +50,15 @@ export default function Portfolio({ initialProjects = [] }: { initialProjects?: 
                 className={styles.cardVisual}
                 style={{ background: `linear-gradient(135deg, ${project.color}22, ${project.color}44)` }}
               >
-                <span className={styles.projectEmoji}>{project.image}</span>
+                {(project.image.startsWith("http") || project.image.startsWith("/") || project.image.startsWith("data:image")) ? (
+                  <img
+                    src={project.image}
+                    alt={project.title}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", top: 0, left: 0 }}
+                  />
+                ) : (
+                  <span className={styles.projectEmoji}>{project.image}</span>
+                )}
                 <div
                   className={styles.colorBar}
                   style={{ background: project.color }}

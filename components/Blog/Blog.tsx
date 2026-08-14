@@ -44,7 +44,13 @@ export default function Blog({ initialPosts = [] }: { initialPosts?: Post[] }) {
               transition={{ delay: i * 0.1, duration: 0.5 }}
               whileHover={{ y: -8, transition: { duration: 0.2 } }}
             >
-              <div className={styles.emoji}>{post.emoji}</div>
+              {(post.emoji.startsWith("http") || post.emoji.startsWith("/") || post.emoji.startsWith("data:image")) ? (
+                <div style={{ width: "100%", height: "160px", borderRadius: "10px", overflow: "hidden", marginBottom: "4px" }}>
+                  <img src={post.emoji} alt={post.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                </div>
+              ) : (
+                <div className={styles.emoji}>{post.emoji}</div>
+              )}
               <div className={styles.meta}>
                 <span className={styles.tag}><Tag size={11} /> {post.tag}</span>
                 <span className={styles.date}><Clock size={11} /> {post.readTime}</span>

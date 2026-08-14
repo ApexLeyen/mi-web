@@ -26,8 +26,14 @@ export default async function BlogPage() {
           ) : (
             posts.map(post => (
               <Link key={post.id} href={`/blog/${post.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                <article className="glass" style={{ padding: '24px', borderRadius: '16px', cursor: 'pointer', transition: 'transform 0.2s', height: '100%' }}>
-                  <div style={{ fontSize: '2.5rem', marginBottom: '12px' }}>{post.emoji}</div>
+                <article className="glass" style={{ padding: '24px', borderRadius: '16px', cursor: 'pointer', transition: 'transform 0.2s', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                  {(post.emoji.startsWith("http") || post.emoji.startsWith("/") || post.emoji.startsWith("data:image")) ? (
+                    <div style={{ width: '100%', height: '180px', borderRadius: '10px', overflow: 'hidden', marginBottom: '14px' }}>
+                      <img src={post.emoji} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                  ) : (
+                    <div style={{ fontSize: '2.5rem', marginBottom: '12px' }}>{post.emoji}</div>
+                  )}
                   <div style={{ display: 'flex', gap: '10px', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '10px' }}>
                     <span style={{ background: 'var(--accent-primary)', color: '#fff', padding: '2px 8px', borderRadius: '20px', fontSize: '0.75rem' }}>{post.tag}</span>
                     <span>⏱ {post.readTime}</span>

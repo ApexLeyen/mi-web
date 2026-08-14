@@ -1,5 +1,7 @@
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
+import AppForm from "./AppForm";
+import { Trash2, ExternalLink, HardDrive, Cpu, Smartphone } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
 
@@ -31,74 +33,140 @@ async function deleteApp(formData: FormData) {
 }
 
 export default async function AdminApps() {
-  const apps = await prisma.app.findMany({ orderBy: { createdAt: 'desc' } });
+  let apps: any[] = [];
+  try {
+    apps = await prisma.app.findMany({ orderBy: { createdAt: 'desc' } });
+  } catch (e) {
+    console.error("Error loading apps:", e);
+  }
+
+  const isImageUrl = (val: string) => {
+    return val && (val.startsWith("http://") || val.startsWith("https://") || val.startsWith("/") || val.startsWith("data:image"));
+  };
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-        <h2>Gestionar Aplicaciones</h2>
+    <div style={{ display: "flex", flexDirection: "column", gap: "36px" }}>
+      <div>
+        <h2 style={{ margin: "0 0 8px 0", fontSize: "1.6rem" }}>📱 Gestión de Aplicaciones (APK)</h2>
+        <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: "0.95rem" }}>
+          Publica tus aplicaciones Android con soporte para imágenes, versiones, changelogs y descargas directas.
+        </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '30px' }}>
-        {/* List */}
-        <div>
-          <h3>Aplicaciones Publicadas ({apps.length})</h3>
-          <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
-            {apps.length === 0 ? (
-              <p style={{ color: 'var(--text-muted)' }}>No hay aplicaciones publicadas todavía.</p>
-            ) : (
-              apps.map(app => (
-                <div key={app.id} style={{ padding: '15px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                  <div style={{ fontSize: '2rem' }}>{app.icon}</div>
-                  <div style={{ flex: 1 }}>
-                    <h4 style={{ margin: 0 }}>{app.name} <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>v{app.version}</span></h4>
-                    <p style={{ margin: '5px 0 0 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{app.category} • {app.status}</p>
-                  </div>
-                  <form action={deleteApp}>
-                    <input type="hidden" name="id" value={app.id} />
-                    <button type="submit" style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem' }}>Eliminar</button>
-                  </form>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
+      {/* Formulario de creación con vista previa en vivo */}
+      <AppForm createAction={createApp} />
 
-        {/* Form */}
-        <div style={{ background: 'var(--bg-secondary)', padding: '20px', borderRadius: '12px' }}>
-          <h3>Añadir Nueva App</h3>
-          <form action={createApp} style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '20px' }}>
-            <input type="text" name="name" placeholder="Nombre de la App" required style={inputStyle} />
-            <input type="text" name="icon" placeholder="Icono (Emoji ej. 🚀)" required style={inputStyle} />
-            <textarea name="description" placeholder="Descripción breve" required style={{...inputStyle, minHeight: '80px'}} />
-            <input type="text" name="category" placeholder="Categoría" required style={inputStyle} />
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <input type="text" name="version" placeholder="Versión" required style={inputStyle} />
-              <input type="text" name="size" placeholder="Tamaño" required style={inputStyle} />
-            </div>
-            <input type="text" name="minRequirements" placeholder="Requisitos Mínimos" required style={inputStyle} />
-            <textarea name="changelog" placeholder="Changelog" required style={{...inputStyle, minHeight: '80px'}} />
-            <input type="url" name="downloadUrl" placeholder="URL de Descarga" required style={inputStyle} />
-            <select name="status" required style={inputStyle}>
-              <option value="available">Disponible</option>
-              <option value="beta">Beta</option>
-              <option value="soon">Próximamente</option>
-            </select>
-            <button type="submit" className="btn btn-primary" style={{ marginTop: '10px' }}>Publicar App</button>
-          </form>
-        </div>
+      {/* Listado de aplicaciones publicadas */}
+      <div style={{ borderTop: "1px solid var(--border-glass)", paddingTop: "32px" }}>
+        <h3 style={{ margin: "0 0 20px 0", fontSize: "1.3rem" }}>
+          Aplicaciones Publicadas ({apps.length})
+        </h3>
+
+        {apps.length === 0 ? (
+          <div style={{ padding: "40px", textAlign: "center", background: "var(--bg-secondary)", borderRadius: "12px", color: "var(--text-muted)" }}>
+            <Smartphone size={36} style={{ marginBottom: "12px", opacity: 0.5 }} />
+            <p style={{ margin: 0 }}>Aún no has publicado ninguna aplicación. ¡Crea la primera arriba!</p>
+          </div>
+        ) : (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "16px" }}>
+            {apps.map((app) => (
+              <div
+                key={app.id}
+                style={{
+                  padding: "18px",
+                  background: "var(--bg-secondary)",
+                  borderRadius: "12px",
+                  border: "1px solid var(--border-glass)",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "12px",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                  <div
+                    style={{
+                      width: "48px",
+                      height: "48px",
+                      borderRadius: "10px",
+                      background: "var(--bg-card)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      overflow: "hidden",
+                      flexShrink: 0,
+                      fontSize: "2rem",
+                    }}
+                  >
+                    {isImageUrl(app.icon) ? (
+                      <img src={app.icon} alt={app.name} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                    ) : (
+                      app.icon || "📱"
+                    )}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <h4 style={{ margin: 0, fontSize: "1.05rem", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      {app.name}
+                    </h4>
+                    <div style={{ display: "flex", gap: "8px", alignItems: "center", marginTop: "4px", fontSize: "0.8rem", color: "var(--text-muted)" }}>
+                      <span>{app.category}</span>
+                      <span>•</span>
+                      <span>v{app.version}</span>
+                      <span>•</span>
+                      <span style={{ color: app.status === "available" ? "#10b981" : app.status === "beta" ? "#f59e0b" : "#9ca3af" }}>
+                        {app.status === "available" ? "Disponible" : app.status === "beta" ? "Beta" : "Próximamente"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-secondary)", lineHeight: 1.4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                  {app.description}
+                </p>
+
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid var(--border-color)", paddingTop: "10px", marginTop: "auto" }}>
+                  <span style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>
+                    <HardDrive size={12} style={{ display: "inline", verticalAlign: "middle", marginRight: "3px" }} />
+                    {app.size}
+                  </span>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <a
+                      href={app.downloadUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-secondary"
+                      style={{ padding: "5px 10px", fontSize: "0.78rem" }}
+                      title="Probar enlace de descarga"
+                    >
+                      <ExternalLink size={13} /> Link
+                    </a>
+                    <form action={deleteApp}>
+                      <input type="hidden" name="id" value={app.id} />
+                      <button
+                        type="submit"
+                        style={{
+                          background: "#ef444422",
+                          color: "#ef4444",
+                          border: "1px solid #ef444444",
+                          padding: "5px 12px",
+                          borderRadius: "6px",
+                          cursor: "pointer",
+                          fontSize: "0.8rem",
+                          fontWeight: 600,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "4px",
+                        }}
+                      >
+                        <Trash2 size={13} /> Eliminar
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
 }
-
-const inputStyle = {
-  width: '100%',
-  padding: '10px 14px',
-  borderRadius: '8px',
-  border: '1px solid var(--border-color)',
-  background: 'var(--bg-card)',
-  color: 'var(--text-primary)',
-  fontFamily: 'inherit',
-  outline: 'none'
-};
