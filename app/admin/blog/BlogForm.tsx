@@ -1,19 +1,22 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { Sparkles, Bold, Italic, Heading2, Heading3, Code, List, Quote, Link2, Image as ImageIcon, Eye, Edit3, Clock, Tag, Heart, MessageSquare, Upload, Check } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Sparkles, Bold, Italic, Heading2, Heading3, Code, List, Quote, Link2, Image as ImageIcon, Eye, Edit3, Clock, Tag, Heart, MessageSquare, Upload, X, Save } from "lucide-react";
 
 interface BlogFormProps {
   createAction: (formData: FormData) => Promise<void>;
+  updateAction?: (formData: FormData) => Promise<void>;
+  editingPost?: any | null;
+  onCancelEdit?: () => void;
 }
 
-export default function BlogForm({ createAction }: BlogFormProps) {
-  const [title, setTitle] = useState("");
-  const [emoji, setEmoji] = useState("⚡");
-  const [tag, setTag] = useState("Next.js");
-  const [readTime, setReadTime] = useState("5 min");
-  const [excerpt, setExcerpt] = useState("");
-  const [content, setContent] = useState("");
+export default function BlogForm({ createAction, updateAction, editingPost, onCancelEdit }: BlogFormProps) {
+  const [title, setTitle] = useState(editingPost?.title || "");
+  const [emoji, setEmoji] = useState(editingPost?.emoji || "⚡");
+  const [tag, setTag] = useState(editingPost?.tag || "Next.js");
+  const [readTime, setReadTime] = useState(editingPost?.readTime || "5 min");
+  const [excerpt, setExcerpt] = useState(editingPost?.excerpt || "");
+  const [content, setContent] = useState(editingPost?.content || "");
   const [activeTab, setActiveTab] = useState<"editor" | "preview">("editor");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
@@ -22,6 +25,17 @@ export default function BlogForm({ createAction }: BlogFormProps) {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const fileInputCoverRef = useRef<HTMLInputElement | null>(null);
   const fileInputInlineRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (editingPost) {
+      setTitle(editingPost.title || "");
+      setEmoji(editingPost.emoji || "⚡");
+      setTag(editingPost.tag || "");
+      setReadTime(editingPost.readTime || "5 min");
+      setExcerpt(editingPost.excerpt || "");
+      setContent(editingPost.content || "");
+    }
+  }, [editingPost]);
 
   const isImageUrl = (val: string) => {
     return val && (val.startsWith("http://") || val.startsWith("https://") || val.startsWith("/") || val.startsWith("data:image"));
@@ -37,7 +51,7 @@ export default function BlogForm({ createAction }: BlogFormProps) {
           const canvas = document.createElement("canvas");
           let width = img.width;
           let height = img.height;
-          const maxDimension = 1200; // max width/height
+          const maxDimension = 1200;
 
           if (width > maxDimension || height > maxDimension) {
             if (width > height) {
@@ -123,6 +137,8 @@ export default function BlogForm({ createAction }: BlogFormProps) {
     setReadTime(`${mins} min`);
   };
 
+  const actionToUse = editingPost && updateAction ? updateAction : createAction;
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       {/* Hidden File Inputs */}
@@ -141,68 +157,95 @@ export default function BlogForm({ createAction }: BlogFormProps) {
         style={{ display: "none" }}
       />
 
-      {/* Selector de pestañas */}
+      {/* Selector de pestañas y estado */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h3 style={{ margin: 0, fontSize: "1.2rem", display: "flex", alignItems: "center", gap: "8px" }}>
-          <Sparkles size={18} color="var(--accent-primary)" /> Redactar y Publicar Artículo
+          <Sparkles size={18} color="var(--accent-primary)" />
+          {editingPost ? `✏️ Editando: "${editingPost.title}"` : "Redactar y Publicar Artículo"}
         </h3>
 
-        <div style={{ display: "flex", background: "var(--bg-secondary)", padding: "4px", borderRadius: "10px", border: "1px solid var(--border-glass)" }}>
-          <button
-            type="button"
-            onClick={() => setActiveTab("editor")}
-            style={{
-              padding: "6px 14px",
-              borderRadius: "8px",
-              border: "none",
-              background: activeTab === "editor" ? "var(--accent-primary)" : "transparent",
-              color: activeTab === "editor" ? "white" : "var(--text-secondary)",
-              fontWeight: 600,
-              fontSize: "0.85rem",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-            }}
-          >
-            <Edit3 size={14} /> Editor
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("preview")}
-            style={{
-              padding: "6px 14px",
-              borderRadius: "8px",
-              border: "none",
-              background: activeTab === "preview" ? "var(--accent-primary)" : "transparent",
-              color: activeTab === "preview" ? "white" : "var(--text-secondary)",
-              fontWeight: 600,
-              fontSize: "0.85rem",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-            }}
-          >
-            <Eye size={14} /> Vista Previa Completa
-          </button>
+        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+          {editingPost && onCancelEdit && (
+            <button
+              type="button"
+              onClick={onCancelEdit}
+              style={{
+                padding: "6px 14px",
+                borderRadius: "8px",
+                border: "1px solid #ef4444",
+                background: "#ef444422",
+                color: "#ef4444",
+                fontWeight: 600,
+                fontSize: "0.85rem",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+              }}
+            >
+              <X size={14} /> Cancelar Edición
+            </button>
+          )}
+
+          <div style={{ display: "flex", background: "var(--bg-secondary)", padding: "4px", borderRadius: "10px", border: "1px solid var(--border-glass)" }}>
+            <button
+              type="button"
+              onClick={() => setActiveTab("editor")}
+              style={{
+                padding: "6px 14px",
+                borderRadius: "8px",
+                border: "none",
+                background: activeTab === "editor" ? "var(--accent-primary)" : "transparent",
+                color: activeTab === "editor" ? "white" : "var(--text-secondary)",
+                fontWeight: 600,
+                fontSize: "0.85rem",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+              }}
+            >
+              <Edit3 size={14} /> Editor
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("preview")}
+              style={{
+                padding: "6px 14px",
+                borderRadius: "8px",
+                border: "none",
+                background: activeTab === "preview" ? "var(--accent-primary)" : "transparent",
+                color: activeTab === "preview" ? "white" : "var(--text-secondary)",
+                fontWeight: 600,
+                fontSize: "0.85rem",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+              }}
+            >
+              <Eye size={14} /> Vista Previa Completa
+            </button>
+          </div>
         </div>
       </div>
 
       {activeTab === "editor" ? (
         <form
-          action={createAction}
+          action={actionToUse}
           onSubmit={() => setIsSubmitting(true)}
           style={{
             background: "var(--bg-secondary)",
             padding: "24px",
             borderRadius: "16px",
-            border: "1px solid var(--border-glass)",
+            border: editingPost ? "2px solid var(--accent-primary)" : "1px solid var(--border-glass)",
             display: "flex",
             flexDirection: "column",
             gap: "18px",
           }}
         >
+          {editingPost && <input type="hidden" name="id" value={editingPost.id} />}
+
           {/* Título */}
           <div>
             <label style={labelStyle}>Título del Artículo</label>
@@ -368,7 +411,6 @@ export default function BlogForm({ createAction }: BlogFormProps) {
                 <Link2 size={15} />
               </button>
 
-              {/* Botón para insertar imagen desde URL o subir desde PC */}
               <button
                 type="button"
                 onClick={() => fileInputInlineRef.current?.click()}
@@ -406,14 +448,30 @@ export default function BlogForm({ createAction }: BlogFormProps) {
             />
           </div>
 
-          <button
-            type="submit"
-            className="btn btn-primary"
-            disabled={isSubmitting}
-            style={{ padding: "14px", fontSize: "1rem", marginTop: "6px", width: "100%", justifyContent: "center" }}
-          >
-            {isSubmitting ? "Publicando artículo..." : "📝 Publicar Artículo en el Blog"}
-          </button>
+          <div style={{ display: "flex", gap: "12px", marginTop: "6px" }}>
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={isSubmitting}
+              style={{ padding: "14px", fontSize: "1rem", flex: 1, justifyContent: "center" }}
+            >
+              {isSubmitting
+                ? "Guardando..."
+                : editingPost
+                ? "💾 Guardar Cambios del Artículo"
+                : "📝 Publicar Artículo en el Blog"}
+            </button>
+            {editingPost && onCancelEdit && (
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={onCancelEdit}
+                style={{ padding: "14px 20px" }}
+              >
+                Cancelar
+              </button>
+            )}
+          </div>
         </form>
       ) : (
         /* Pestaña de Vista Previa */
@@ -459,7 +517,7 @@ export default function BlogForm({ createAction }: BlogFormProps) {
             </div>
           )}
 
-          {/* Contenido formateado con imágenes */}
+          {/* Contenido formateado */}
           <div style={{ fontSize: "1.05rem", lineHeight: 1.8, color: "var(--text-secondary)", whiteSpace: "pre-wrap" }}>
             {content || "Escribe contenido en el editor para previsualizarlo aquí..."}
           </div>
@@ -467,10 +525,10 @@ export default function BlogForm({ createAction }: BlogFormProps) {
           {/* Interacciones simuladas */}
           <div style={{ borderTop: "1px solid var(--border-color)", paddingTop: "20px", display: "flex", gap: "16px", alignItems: "center" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "var(--accent-primary)", fontWeight: 600 }}>
-              <Heart size={18} fill="currentColor" /> 0 Likes
+              <Heart size={18} fill="currentColor" /> {editingPost?.likes || 0} Likes
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "var(--text-muted)" }}>
-              <MessageSquare size={18} /> 0 Comentarios
+              <MessageSquare size={18} /> {editingPost?._count?.comments || 0} Comentarios
             </div>
           </div>
         </div>
