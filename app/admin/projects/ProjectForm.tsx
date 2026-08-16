@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Sparkles, ExternalLink, GitBranch, Palette } from "lucide-react";
+import { useState, useRef } from "react";
+import { Sparkles, ExternalLink, GitBranch, Palette, Upload } from "lucide-react";
 
 interface ProjectFormProps {
   createAction: (formData: FormData) => Promise<void>;
@@ -26,9 +26,47 @@ export default function ProjectForm({ createAction }: ProjectFormProps) {
   const [github, setGithub] = useState("");
   const [color, setColor] = useState("#7c3aed");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const isImageUrl = (val: string) => {
     return val && (val.startsWith("http://") || val.startsWith("https://") || val.startsWith("/") || val.startsWith("data:image"));
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+        const max = 800;
+        if (width > max || height > max) {
+          if (width > height) {
+            height = Math.round((height * max) / width);
+            width = max;
+          } else {
+            width = Math.round((width * max) / height);
+            height = max;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.82);
+        setImage(dataUrl);
+        setUploadingImage(false);
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = () => {
@@ -37,6 +75,15 @@ export default function ProjectForm({ createAction }: ProjectFormProps) {
 
   return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: "28px", alignItems: "start" }}>
+      {/* Hidden File Input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFileUpload}
+        style={{ display: "none" }}
+      />
+
       {/* Formulario de Proyecto */}
       <form
         action={createAction}
@@ -75,18 +122,39 @@ export default function ProjectForm({ createAction }: ProjectFormProps) {
         {/* Imagen o Emoji de Portada */}
         <div>
           <label style={labelStyle}>
-            Imagen de Portada o Emoji <span style={{ color: "var(--text-muted)", fontWeight: "normal" }}>(Emoji ej. ⚡ o URL https://...)</span>
+            Imagen de Portada o Emoji <span style={{ color: "var(--text-muted)", fontWeight: "normal" }}>(Emoji, URL o Subir Imagen)</span>
           </label>
-          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
             <input
               type="text"
               name="image"
-              placeholder="Pega un Emoji o una URL de imagen..."
+              placeholder="Pega Emoji, URL o sube una imagen..."
               value={image}
               onChange={(e) => setImage(e.target.value)}
               required
               style={{ ...inputStyle, flex: 1 }}
             />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              style={{
+                padding: "10px 12px",
+                borderRadius: "8px",
+                border: "1px solid var(--border-color)",
+                background: "var(--bg-card)",
+                color: "var(--accent-primary)",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                fontSize: "0.82rem",
+                fontWeight: 600,
+                whiteSpace: "nowrap",
+              }}
+              title="Subir foto desde tu dispositivo"
+            >
+              <Upload size={14} /> {uploadingImage ? "Subiendo..." : "Subir Foto"}
+            </button>
             <div
               style={{
                 width: "44px",

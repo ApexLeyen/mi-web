@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Sparkles, Bold, Italic, Heading2, Heading3, Code, List, Quote, Link2, Image as ImageIcon, Eye, Edit3, Clock, Tag, Heart, MessageSquare } from "lucide-react";
+import { Sparkles, Bold, Italic, Heading2, Heading3, Code, List, Quote, Link2, Image as ImageIcon, Eye, Edit3, Clock, Tag, Heart, MessageSquare, Upload, Check } from "lucide-react";
 
 interface BlogFormProps {
   createAction: (formData: FormData) => Promise<void>;
@@ -16,11 +16,84 @@ export default function BlogForm({ createAction }: BlogFormProps) {
   const [content, setContent] = useState("");
   const [activeTab, setActiveTab] = useState<"editor" | "preview">("editor");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const [uploadingInline, setUploadingInline] = useState(false);
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const fileInputCoverRef = useRef<HTMLInputElement | null>(null);
+  const fileInputInlineRef = useRef<HTMLInputElement | null>(null);
 
   const isImageUrl = (val: string) => {
     return val && (val.startsWith("http://") || val.startsWith("https://") || val.startsWith("/") || val.startsWith("data:image"));
+  };
+
+  // Utility to compress and convert image to base64 Data URL
+  const compressAndConvertToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          let width = img.width;
+          let height = img.height;
+          const maxDimension = 1200; // max width/height
+
+          if (width > maxDimension || height > maxDimension) {
+            if (width > height) {
+              height = Math.round((height * maxDimension) / width);
+              width = maxDimension;
+            } else {
+              width = Math.round((width * maxDimension) / height);
+              height = maxDimension;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx?.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL("image/jpeg", 0.82);
+          resolve(dataUrl);
+        };
+        img.onerror = reject;
+        img.src = e.target?.result as string;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
+  // Handle Cover File Upload
+  const handleCoverFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingCover(true);
+    try {
+      const base64Image = await compressAndConvertToBase64(file);
+      setEmoji(base64Image);
+    } catch (err) {
+      alert("Error al cargar la imagen. Inténtalo de nuevo.");
+    } finally {
+      setUploadingCover(false);
+    }
+  };
+
+  // Handle Inline Article Image Upload
+  const handleInlineFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingInline(true);
+    try {
+      const base64Image = await compressAndConvertToBase64(file);
+      insertFormat(`\n![${file.name.replace(/\.[^/.]+$/, "")}](`, `)\n`, base64Image);
+    } catch (err) {
+      alert("Error al cargar la imagen para el artículo.");
+    } finally {
+      setUploadingInline(false);
+    }
   };
 
   // Insert markdown helpers
@@ -52,6 +125,22 @@ export default function BlogForm({ createAction }: BlogFormProps) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+      {/* Hidden File Inputs */}
+      <input
+        ref={fileInputCoverRef}
+        type="file"
+        accept="image/*"
+        onChange={handleCoverFileUpload}
+        style={{ display: "none" }}
+      />
+      <input
+        ref={fileInputInlineRef}
+        type="file"
+        accept="image/*"
+        onChange={handleInlineFileUpload}
+        style={{ display: "none" }}
+      />
+
       {/* Selector de pestañas */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h3 style={{ margin: 0, fontSize: "1.2rem", display: "flex", alignItems: "center", gap: "8px" }}>
@@ -132,18 +221,39 @@ export default function BlogForm({ createAction }: BlogFormProps) {
           <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr", gap: "12px" }}>
             <div>
               <label style={labelStyle}>
-                Portada o Emoji <span style={{ color: "var(--text-muted)", fontWeight: "normal" }}>(Emoji o URL de imagen)</span>
+                Portada del Artículo <span style={{ color: "var(--text-muted)", fontWeight: "normal" }}>(Emoji, URL o Subir Imagen)</span>
               </label>
               <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
                 <input
                   type="text"
                   name="emoji"
-                  placeholder="⚡ o https://images.unsplash.com/..."
+                  placeholder="⚡, URL de imagen o sube un archivo..."
                   value={emoji}
                   onChange={(e) => setEmoji(e.target.value)}
                   required
                   style={{ ...inputStyle, flex: 1 }}
                 />
+                <button
+                  type="button"
+                  onClick={() => fileInputCoverRef.current?.click()}
+                  style={{
+                    padding: "10px 12px",
+                    borderRadius: "8px",
+                    border: "1px solid var(--border-color)",
+                    background: "var(--bg-card)",
+                    color: "var(--accent-primary)",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    fontSize: "0.82rem",
+                    fontWeight: 600,
+                    whiteSpace: "nowrap",
+                  }}
+                  title="Subir foto desde tu dispositivo"
+                >
+                  <Upload size={14} /> {uploadingCover ? "Subiendo..." : "Subir Foto"}
+                </button>
                 <div
                   style={{
                     width: "42px",
@@ -211,7 +321,7 @@ export default function BlogForm({ createAction }: BlogFormProps) {
           {/* Barra de Formato Rápido */}
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-              <label style={{ ...labelStyle, margin: 0 }}>Contenido del Artículo (con soporte Markdown y texto enriquecido)</label>
+              <label style={{ ...labelStyle, margin: 0 }}>Contenido del Artículo (con soporte Markdown y fotos en el texto)</label>
               <span style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>
                 {content.trim().split(/\s+/).filter(Boolean).length} palabras
               </span>
@@ -257,15 +367,30 @@ export default function BlogForm({ createAction }: BlogFormProps) {
               <button type="button" onClick={() => insertFormat("[", "](https://enlace.com)", "Texto del enlace")} style={toolbarBtnStyle} title="Enlace">
                 <Link2 size={15} />
               </button>
-              <button type="button" onClick={() => insertFormat("![Descripción de imagen](", ")", "https://url-de-tu-imagen.com")} style={toolbarBtnStyle} title="Insertar Imagen">
+
+              {/* Botón para insertar imagen desde URL o subir desde PC */}
+              <button
+                type="button"
+                onClick={() => fileInputInlineRef.current?.click()}
+                style={{
+                  ...toolbarBtnStyle,
+                  background: "rgba(124, 58, 237, 0.15)",
+                  color: "var(--accent-primary)",
+                  fontWeight: 600,
+                  gap: "4px",
+                  padding: "6px 12px",
+                }}
+                title="Subir e insertar imagen dentro del artículo"
+              >
                 <ImageIcon size={15} />
+                <span style={{ fontSize: "0.8rem" }}>{uploadingInline ? "Cargando..." : "📷 Agregar Foto al Artículo"}</span>
               </button>
             </div>
 
             <textarea
               ref={textareaRef}
               name="content"
-              placeholder="Escribe aquí tu artículo completo... Puedes estructurarlo con párrafos, títulos (##), listas y código."
+              placeholder="Escribe aquí tu artículo completo... Puedes usar la barra superior para agregar negritas, títulos y fotos dentro del texto."
               value={content}
               onChange={(e) => handleContentChange(e.target.value)}
               required
@@ -307,7 +432,7 @@ export default function BlogForm({ createAction }: BlogFormProps) {
           {/* Header del post */}
           <div>
             {isImageUrl(emoji) ? (
-              <div style={{ height: "240px", width: "100%", borderRadius: "12px", overflow: "hidden", marginBottom: "20px" }}>
+              <div style={{ height: "260px", width: "100%", borderRadius: "12px", overflow: "hidden", marginBottom: "20px" }}>
                 <img src={emoji} alt={title} style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => { (e.target as any).src = "/logo.png"; }} />
               </div>
             ) : (
@@ -334,7 +459,7 @@ export default function BlogForm({ createAction }: BlogFormProps) {
             </div>
           )}
 
-          {/* Contenido formateado */}
+          {/* Contenido formateado con imágenes */}
           <div style={{ fontSize: "1.05rem", lineHeight: 1.8, color: "var(--text-secondary)", whiteSpace: "pre-wrap" }}>
             {content || "Escribe contenido en el editor para previsualizarlo aquí..."}
           </div>

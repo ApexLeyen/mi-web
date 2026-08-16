@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { HardDrive, Cpu, Download, Info, Image as ImageIcon, Sparkles, AlertCircle } from "lucide-react";
+import { useState, useRef } from "react";
+import { HardDrive, Cpu, Download, Info, Image as ImageIcon, Sparkles, Upload } from "lucide-react";
 
 interface AppFormProps {
   createAction: (formData: FormData) => Promise<void>;
@@ -25,9 +25,47 @@ export default function AppForm({ createAction }: AppFormProps) {
   const [downloadUrl, setDownloadUrl] = useState("");
   const [status, setStatus] = useState("available");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadingIcon, setUploadingIcon] = useState(false);
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const isImageUrl = (val: string) => {
-    return val.startsWith("http://") || val.startsWith("https://") || val.startsWith("/") || val.startsWith("data:image");
+    return val && (val.startsWith("http://") || val.startsWith("https://") || val.startsWith("/") || val.startsWith("data:image"));
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingIcon(true);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+        const max = 500;
+        if (width > max || height > max) {
+          if (width > height) {
+            height = Math.round((height * max) / width);
+            width = max;
+          } else {
+            width = Math.round((width * max) / height);
+            height = max;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL("image/png", 0.85);
+        setIcon(dataUrl);
+        setUploadingIcon(false);
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -36,6 +74,15 @@ export default function AppForm({ createAction }: AppFormProps) {
 
   return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: "28px", alignItems: "start" }}>
+      {/* Hidden File Input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFileUpload}
+        style={{ display: "none" }}
+      />
+
       {/* Formulario Principal */}
       <form
         action={createAction}
@@ -85,21 +132,42 @@ export default function AppForm({ createAction }: AppFormProps) {
           </div>
         </div>
 
-        {/* Icono (Emoji o URL de Imagen) */}
+        {/* Icono (Emoji o URL o Subir Imagen) */}
         <div>
           <label style={labelStyle}>
-            Icono o Imagen de la App <span style={{ color: "var(--text-muted)", fontWeight: "normal" }}>(Emoji ej. 📱 o URL de imagen https://...)</span>
+            Icono o Imagen de la App <span style={{ color: "var(--text-muted)", fontWeight: "normal" }}>(Emoji, URL o Subir Imagen)</span>
           </label>
-          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
             <input
               type="text"
               name="icon"
-              placeholder="Pega un Emoji o una URL de imagen..."
+              placeholder="Pega Emoji, URL o sube una imagen..."
               value={icon}
               onChange={(e) => setIcon(e.target.value)}
               required
               style={{ ...inputStyle, flex: 1 }}
             />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              style={{
+                padding: "10px 12px",
+                borderRadius: "8px",
+                border: "1px solid var(--border-color)",
+                background: "var(--bg-card)",
+                color: "var(--accent-primary)",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                fontSize: "0.82rem",
+                fontWeight: 600,
+                whiteSpace: "nowrap",
+              }}
+              title="Subir foto desde tu dispositivo"
+            >
+              <Upload size={14} /> {uploadingIcon ? "Subiendo..." : "Subir Foto"}
+            </button>
             <div
               style={{
                 width: "44px",
