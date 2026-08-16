@@ -74,7 +74,7 @@ export default function ProjectForm({ createAction }: ProjectFormProps) {
   };
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: "28px", alignItems: "start" }}>
+    <div className="admin-form-grid">
       {/* Hidden File Input */}
       <input
         ref={fileInputRef}
@@ -267,7 +267,7 @@ export default function ProjectForm({ createAction }: ProjectFormProps) {
         </div>
 
         {/* URLs */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+        <div className="admin-form-row-2">
           <div>
             <label style={labelStyle}>URL del Proyecto / Demo</label>
             <input

@@ -346,3 +346,84 @@ section {
   .section-tag { padding: 4px 14px; font-size: 0.72rem; letter-spacing: 1px; }
   .section-title { font-size: clamp(1.6rem, 7vw, 2.2rem); }
 }
+
+/* ============================================
+   ADMIN PANEL RESPONSIVE GRID & FORMS
+   ============================================ */
+.admin-grid {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 32px;
+  margin-top: 32px;
+}
+
+.admin-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-main {
+  padding: 30px;
+  min-height: 600px;
+}
+
+.admin-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 28px;
+  align-items: start;
+}
+
+.admin-form-row-2 {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 12px;
+}
+
+.admin-form-row-3 {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 960px) {
+  .admin-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-top: 20px;
+  }
+  .admin-nav-links {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .admin-nav-links a {
+    flex: 1 1 auto;
+    text-align: center;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+  .admin-main {
+    padding: 18px;
+    min-height: auto;
+  }
+  .admin-form-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .admin-form-row-3 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .admin-form-row-2, .admin-form-row-3 {
+    grid-template-columns: 1fr;
+  }
+}

@@ -73,7 +73,7 @@ export default function AppForm({ createAction }: AppFormProps) {
   };
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: "28px", alignItems: "start" }}>
+    <div className="admin-form-grid">
       {/* Hidden File Input */}
       <input
         ref={fileInputRef}
@@ -105,7 +105,7 @@ export default function AppForm({ createAction }: AppFormProps) {
         </div>
 
         {/* Nombre & Categoría */}
-        <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: "12px" }}>
+        <div className="admin-form-row-2">
           <div>
             <label style={labelStyle}>Nombre de la Aplicación</label>
             <input
@@ -206,7 +206,7 @@ export default function AppForm({ createAction }: AppFormProps) {
         </div>
 
         {/* Versión, Tamaño y Requisitos */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px" }}>
+        <div className="admin-form-row-3">
           <div>
             <label style={labelStyle}>Versión</label>
             <input

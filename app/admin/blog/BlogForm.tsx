@@ -261,7 +261,7 @@ export default function BlogForm({ createAction, updateAction, editingPost, onCa
           </div>
 
           {/* Emoji / Portada + Categoría + Tiempo */}
-          <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr", gap: "12px" }}>
+          <div className="admin-form-row-3">
             <div>
               <label style={labelStyle}>
                 Portada del Artículo <span style={{ color: "var(--text-muted)", fontWeight: "normal" }}>(Emoji, URL o Subir Imagen)</span>
