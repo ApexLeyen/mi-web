@@ -14,7 +14,7 @@ export default function AdminLayout({
 }) {
   return (
     <div style={{ paddingTop: '100px', minHeight: '100vh', background: 'var(--bg-primary)', paddingBottom: '60px' }}>
-      <div className="container">
+      <div className="admin-container">
         <h1 className="section-title">Panel de <span className="gradient-text">Administración</span></h1>
         <div className="admin-grid">
           <aside className="admin-nav">
