@@ -1,6 +1,5 @@
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
-import { requireAdminAuth } from "@/lib/auth";
 import ProjectForm from "./ProjectForm";
 import { Trash2, ExternalLink, GitBranch, Briefcase } from "lucide-react";
 
@@ -8,7 +7,6 @@ export const dynamic = 'force-dynamic';
 
 async function createProject(formData: FormData) {
   "use server";
-  await requireAdminAuth();
   await prisma.project.create({
     data: {
       title: formData.get("title") as string,
@@ -26,14 +24,12 @@ async function createProject(formData: FormData) {
 
 async function deleteProject(formData: FormData) {
   "use server";
-  await requireAdminAuth();
   await prisma.project.delete({ where: { id: formData.get("id") as string } });
   revalidatePath("/admin/projects");
   revalidatePath("/");
 }
 
 export default async function AdminProjects() {
-  await requireAdminAuth();
   let projects: any[] = [];
   try {
     projects = await prisma.project.findMany({ orderBy: { createdAt: 'desc' } });

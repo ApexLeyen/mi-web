@@ -1,6 +1,5 @@
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
-import { requireAdminAuth } from "@/lib/auth";
 import AppForm from "./AppForm";
 import { Trash2, ExternalLink, HardDrive, Cpu, Smartphone } from "lucide-react";
 
@@ -8,7 +7,6 @@ export const dynamic = 'force-dynamic';
 
 async function createApp(formData: FormData) {
   "use server";
-  await requireAdminAuth();
   await prisma.app.create({
     data: {
       name: formData.get("name") as string,
@@ -29,14 +27,12 @@ async function createApp(formData: FormData) {
 
 async function deleteApp(formData: FormData) {
   "use server";
-  await requireAdminAuth();
   await prisma.app.delete({ where: { id: formData.get("id") as string } });
   revalidatePath("/admin/apps");
   revalidatePath("/");
 }
 
 export default async function AdminApps() {
-  await requireAdminAuth();
   let apps: any[] = [];
   try {
     apps = await prisma.app.findMany({ orderBy: { createdAt: 'desc' } });

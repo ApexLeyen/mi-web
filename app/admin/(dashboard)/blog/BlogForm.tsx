@@ -158,7 +158,7 @@ export default function BlogForm({ createAction, updateAction, editingPost, onCa
       />
 
       {/* Selector de pestañas y estado */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
         <h3 style={{ margin: 0, fontSize: "1.2rem", display: "flex", alignItems: "center", gap: "8px" }}>
           <Sparkles size={18} color="var(--accent-primary)" />
           {editingPost ? `✏️ Editando: "${editingPost.title}"` : "Redactar y Publicar Artículo"}

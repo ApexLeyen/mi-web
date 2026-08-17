@@ -1,8 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import Navbar from "@/components/Navbar/Navbar";
-import Footer from "@/components/Footer/Footer";
 import { ThemeProvider } from "@/components/ThemeProvider/ThemeProvider";
+import PublicLayoutWrapper from "@/components/PublicLayoutWrapper/PublicLayoutWrapper";
 
 export const metadata: Metadata = {
   title: "Muñeco Tecnology — Transformando ideas en soluciones digitales",
@@ -41,9 +40,9 @@ export default function RootLayout({
     <html lang="es" suppressHydrationWarning>
       <body>
         <ThemeProvider>
-          <Navbar />
-          <main>{children}</main>
-          <Footer />
+          <PublicLayoutWrapper>
+            {children}
+          </PublicLayoutWrapper>
         </ThemeProvider>
       </body>
     </html>

@@ -1,6 +1,5 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Cpu, GitBranch, PlayCircle, Send, X, Mail, Heart } from "lucide-react";
 import styles from "./Footer.module.css";
@@ -26,13 +25,6 @@ const socials = [
 ];
 
 export default function Footer() {
-  const pathname = usePathname();
-
-  // Hide main site footer on all /admin pages
-  if (pathname?.startsWith("/admin")) {
-    return null;
-  }
-
   return (
     <footer className={styles.footer}>
       <div className={styles.topBar} />
