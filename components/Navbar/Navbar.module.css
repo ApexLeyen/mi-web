@@ -10,11 +10,11 @@
 }
 
 .navbar.scrolled {
-  background: var(--bg-nav);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
-  border-bottom: 1px solid var(--border-glass);
-  box-shadow: var(--shadow-sm);
+  background: var(--bg-primary);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 .container {
@@ -128,10 +128,20 @@
 }
 
 .mobileMenu {
+  position: fixed;
+  top: 70px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(100vh - 70px);
+  background: var(--bg-primary);
+  z-index: 9999;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 40px;
   border-top: 1px solid var(--border-glass);
-  background: var(--bg-nav);
-  backdrop-filter: blur(30px);
-  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
 .mobileLink {

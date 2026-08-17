@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Sun, Moon, Cpu } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { useTheme } from "@/components/ThemeProvider/ThemeProvider";
 import styles from "./Navbar.module.css";
 
@@ -19,12 +20,18 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 30);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Hide main site navbar on all /admin pages
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
 
   return (
     <motion.header
