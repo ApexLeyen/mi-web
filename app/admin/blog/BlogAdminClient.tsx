@@ -63,6 +63,7 @@ export default function BlogAdminClient({ posts, createAction, updateAction, del
                   display: "flex",
                   alignItems: "center",
                   gap: "16px",
+                  flexWrap: "wrap",
                   transition: "border 0.2s",
                 }}
               >
@@ -88,7 +89,7 @@ export default function BlogAdminClient({ posts, createAction, updateAction, del
                   )}
                 </div>
 
-                <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ flex: "1 1 220px", minWidth: 0 }}>
                   <h4 style={{ margin: 0, fontSize: "1.05rem", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                     {post.title}
                   </h4>
@@ -107,7 +108,7 @@ export default function BlogAdminClient({ posts, createAction, updateAction, del
                   </div>
                 </div>
 
-                <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap", marginLeft: "auto" }}>
                   <Link
                     href={`/blog/${post.id}`}
                     target="_blank"

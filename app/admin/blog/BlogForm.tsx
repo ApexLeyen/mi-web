@@ -260,67 +260,69 @@ export default function BlogForm({ createAction, updateAction, editingPost, onCa
             />
           </div>
 
-          {/* Emoji / Portada + Categoría + Tiempo */}
-          <div className="admin-form-row-3">
-            <div>
-              <label style={labelStyle}>
-                Portada del Artículo <span style={{ color: "var(--text-muted)", fontWeight: "normal" }}>(Emoji, URL o Subir Imagen)</span>
-              </label>
-              <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                <input
-                  type="text"
-                  name="emoji"
-                  placeholder="⚡, URL de imagen o sube un archivo..."
-                  value={emoji}
-                  onChange={(e) => setEmoji(e.target.value)}
-                  required
-                  style={{ ...inputStyle, flex: 1 }}
-                />
-                <button
-                  type="button"
-                  onClick={() => fileInputCoverRef.current?.click()}
-                  style={{
-                    padding: "10px 12px",
-                    borderRadius: "8px",
-                    border: "1px solid var(--border-color)",
-                    background: "var(--bg-card)",
-                    color: "var(--accent-primary)",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    fontSize: "0.82rem",
-                    fontWeight: 600,
-                    whiteSpace: "nowrap",
-                  }}
-                  title="Subir foto desde tu dispositivo"
-                >
-                  <Upload size={14} /> {uploadingCover ? "Subiendo..." : "Subir Foto"}
-                </button>
-                <div
-                  style={{
-                    width: "42px",
-                    height: "42px",
-                    borderRadius: "8px",
-                    background: "var(--bg-card)",
-                    border: "1px solid var(--border-color)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    overflow: "hidden",
-                    flexShrink: 0,
-                    fontSize: "1.5rem",
-                  }}
-                >
-                  {isImageUrl(emoji) ? (
-                    <img src={emoji} alt="Preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => { (e.target as any).src = "/logo.png"; }} />
-                  ) : (
-                    emoji || "📝"
-                  )}
-                </div>
+          {/* Portada del Artículo */}
+          <div>
+            <label style={labelStyle}>
+              Portada del Artículo <span style={{ color: "var(--text-muted)", fontWeight: "normal" }}>(Emoji, URL o Subir Imagen desde PC/Móvil)</span>
+            </label>
+            <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
+              <input
+                type="text"
+                name="emoji"
+                placeholder="⚡, URL de imagen o sube un archivo..."
+                value={emoji}
+                onChange={(e) => setEmoji(e.target.value)}
+                required
+                style={{ ...inputStyle, flex: "1 1 240px" }}
+              />
+              <button
+                type="button"
+                onClick={() => fileInputCoverRef.current?.click()}
+                style={{
+                  padding: "10px 14px",
+                  borderRadius: "8px",
+                  border: "1px solid var(--border-color)",
+                  background: "var(--bg-card)",
+                  color: "var(--accent-primary)",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  fontSize: "0.85rem",
+                  fontWeight: 600,
+                  whiteSpace: "nowrap",
+                  flexShrink: 0,
+                }}
+                title="Subir foto desde tu dispositivo"
+              >
+                <Upload size={15} /> {uploadingCover ? "Subiendo..." : "Subir Foto"}
+              </button>
+              <div
+                style={{
+                  width: "46px",
+                  height: "46px",
+                  borderRadius: "8px",
+                  background: "var(--bg-card)",
+                  border: "1px solid var(--border-color)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  overflow: "hidden",
+                  flexShrink: 0,
+                  fontSize: "1.6rem",
+                }}
+              >
+                {isImageUrl(emoji) ? (
+                  <img src={emoji} alt="Preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => { (e.target as any).src = "/logo.png"; }} />
+                ) : (
+                  emoji || "📝"
+                )}
               </div>
             </div>
+          </div>
 
+          {/* Categoría y Tiempo de lectura */}
+          <div className="admin-form-row-2">
             <div>
               <label style={labelStyle}>Categoría / Etiqueta</label>
               <input
