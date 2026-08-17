@@ -1,11 +1,13 @@
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
+import { requireAdminAuth } from "@/lib/auth";
 import BlogAdminClient from "./BlogAdminClient";
 
 export const dynamic = 'force-dynamic';
 
 async function createPost(formData: FormData) {
   "use server";
+  await requireAdminAuth();
   await prisma.post.create({
     data: {
       title: formData.get("title") as string,
@@ -23,6 +25,7 @@ async function createPost(formData: FormData) {
 
 async function updatePost(formData: FormData) {
   "use server";
+  await requireAdminAuth();
   const id = formData.get("id") as string;
   if (!id) return;
 
@@ -45,6 +48,7 @@ async function updatePost(formData: FormData) {
 
 async function deletePost(formData: FormData) {
   "use server";
+  await requireAdminAuth();
   await prisma.post.delete({ where: { id: formData.get("id") as string } });
   revalidatePath("/admin/blog");
   revalidatePath("/");
@@ -52,6 +56,7 @@ async function deletePost(formData: FormData) {
 }
 
 export default async function AdminBlog() {
+  await requireAdminAuth();
   let posts: any[] = [];
   try {
     posts = await prisma.post.findMany({

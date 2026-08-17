@@ -1,15 +1,18 @@
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
+import { requireAdminAuth } from "@/lib/auth";
 
 export const dynamic = 'force-dynamic';
 
 async function deleteComment(formData: FormData) {
   "use server";
+  await requireAdminAuth();
   await prisma.comment.delete({ where: { id: formData.get("id") as string } });
   revalidatePath("/admin/comments");
 }
 
 export default async function AdminComments() {
+  await requireAdminAuth();
   const comments = await prisma.comment.findMany({
     orderBy: { createdAt: 'desc' },
     include: { post: { select: { title: true } } }

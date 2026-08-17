@@ -14,10 +14,11 @@ export default async function AdminLayout({
 }) {
   const cookieStore = await cookies();
   const auth = cookieStore.get("admin-auth");
+  const isAuthenticated = auth?.value === "true";
 
-  // Route Guard: Require admin-auth cookie
-  if (!auth?.value || auth.value !== "true") {
-    redirect("/admin/login");
+  // If not authenticated (e.g. accessing /admin/login), render child page directly without admin layout chrome
+  if (!isAuthenticated) {
+    return <>{children}</>;
   }
 
   return (
