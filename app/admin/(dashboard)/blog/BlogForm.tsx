@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Sparkles, Bold, Italic, Heading2, Heading3, Code, List, Quote, Link2, Image as ImageIcon, Eye, Edit3, Clock, Tag, Heart, MessageSquare, Upload, X, Save } from "lucide-react";
+import MarkdownRenderer from "@/components/MarkdownRenderer/MarkdownRenderer";
 
 interface BlogFormProps {
   createAction: (formData: FormData) => Promise<void>;
@@ -519,9 +520,9 @@ export default function BlogForm({ createAction, updateAction, editingPost, onCa
             </div>
           )}
 
-          {/* Contenido formateado */}
-          <div style={{ fontSize: "1.05rem", lineHeight: 1.8, color: "var(--text-secondary)", whiteSpace: "pre-wrap" }}>
-            {content || "Escribe contenido en el editor para previsualizarlo aquí..."}
+          {/* Contenido formateado con imágenes reales */}
+          <div style={{ fontSize: "1.05rem", lineHeight: 1.8, color: "var(--text-secondary)" }}>
+            <MarkdownRenderer content={content || "Escribe contenido en el editor para previsualizarlo aquí..."} />
           </div>
 
           {/* Interacciones simuladas */}

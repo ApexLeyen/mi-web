@@ -26,6 +26,18 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Lock background scroll when mobile menu is open
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
+
   return (
     <motion.header
       initial={{ y: -80, opacity: 0 }}
@@ -102,40 +114,44 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu (Full Screen Opaque Drawer) */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
             className={styles.mobileMenu}
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
           >
-            {navLinks.map((link, i) => (
-              <motion.a
-                key={link.href}
-                href={link.href}
-                className={styles.mobileLink}
-                initial={{ x: -20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: i * 0.05 }}
-                onClick={() => setMenuOpen(false)}
-              >
-                {link.label}
-              </motion.a>
-            ))}
+            <div className={styles.mobileLinksList}>
+              {navLinks.map((link, i) => (
+                <motion.a
+                  key={link.href}
+                  href={link.href}
+                  className={styles.mobileLink}
+                  initial={{ x: 25, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: i * 0.05, duration: 0.2 }}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  <span>{link.label}</span>
+                  <span style={{ fontSize: "1.1rem", opacity: 0.5 }}>›</span>
+                </motion.a>
+              ))}
+            </div>
+
             <motion.div
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              style={{ padding: "16px 24px", display: "flex", gap: "12px", flexDirection: "column" }}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 }}
+              style={{ padding: "24px 20px", display: "flex", gap: "12px", flexDirection: "column", marginTop: "auto" }}
             >
-              <a href="#apps" className="btn btn-primary" onClick={() => setMenuOpen(false)}>
-                Descargar Apps
+              <a href="#apps" className="btn btn-primary" style={{ width: "100%", padding: "14px" }} onClick={() => setMenuOpen(false)}>
+                🚀 Descargar Apps
               </a>
-              <Link href="/admin/login" className="btn btn-secondary" onClick={() => setMenuOpen(false)}>
-                Panel Administrador
+              <Link href="/admin/login" className="btn btn-secondary" style={{ width: "100%", padding: "14px" }} onClick={() => setMenuOpen(false)}>
+                🔒 Panel Administrador
               </Link>
             </motion.div>
           </motion.div>

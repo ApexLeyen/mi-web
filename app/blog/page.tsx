@@ -20,7 +20,7 @@ export default async function BlogPage() {
           <p>Comparto lo que aprendo: programación, IA, desarrollo móvil y las últimas tendencias tecnológicas.</p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '24px', marginTop: '40px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 320px), 1fr))', gap: '24px', marginTop: '40px' }}>
           {posts.length === 0 ? (
             <p style={{ color: 'var(--text-muted)' }}>No hay artículos publicados todavía. ¡Vuelve pronto!</p>
           ) : (
@@ -28,7 +28,7 @@ export default async function BlogPage() {
               <Link key={post.id} href={`/blog/${post.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <article className="glass" style={{ padding: '24px', borderRadius: '16px', cursor: 'pointer', transition: 'transform 0.2s', height: '100%', display: 'flex', flexDirection: 'column' }}>
                   {(post.emoji.startsWith("http") || post.emoji.startsWith("/") || post.emoji.startsWith("data:image")) ? (
-                    <div style={{ width: '100%', height: '180px', borderRadius: '10px', overflow: 'hidden', marginBottom: '14px' }}>
+                    <div style={{ width: '100%', height: '180px', borderRadius: '10px', overflow: 'hidden', marginBottom: '14px', background: 'var(--bg-secondary)' }}>
                       <img src={post.emoji} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
                   ) : (

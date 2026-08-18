@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import MarkdownRenderer from '@/components/MarkdownRenderer/MarkdownRenderer';
 
 export default function BlogPostPage() {
   const params = useParams();
@@ -104,8 +105,8 @@ export default function BlogPostPage() {
         <article>
           <header style={{ marginBottom: '40px' }}>
             {(post.emoji.startsWith("http") || post.emoji.startsWith("/") || post.emoji.startsWith("data:image")) ? (
-              <div style={{ width: '100%', height: '320px', borderRadius: '16px', overflow: 'hidden', marginBottom: '24px' }}>
-                <img src={post.emoji} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <div style={{ width: '100%', maxHeight: '420px', borderRadius: '16px', overflow: 'hidden', marginBottom: '24px', background: 'var(--bg-secondary)', display: 'flex', justifyContent: 'center' }}>
+                <img src={post.emoji} alt={post.title} style={{ width: '100%', maxHeight: '420px', objectFit: 'cover' }} />
               </div>
             ) : (
               <div style={{ fontSize: '4rem', marginBottom: '20px' }}>{post.emoji}</div>
@@ -120,16 +121,8 @@ export default function BlogPostPage() {
             </div>
           </header>
 
-          <div 
-            style={{ 
-              fontSize: '1.1rem', 
-              lineHeight: 1.8, 
-              color: 'var(--text-secondary)',
-              marginBottom: '50px',
-              whiteSpace: 'pre-wrap'
-            }}
-          >
-            {post.content}
+          <div style={{ marginBottom: '50px' }}>
+            <MarkdownRenderer content={post.content} />
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '60px' }}>
