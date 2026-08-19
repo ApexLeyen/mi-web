@@ -17,11 +17,12 @@ export default function BlogForm({ createAction, updateAction, editingPost, onCa
   const [tag, setTag] = useState(editingPost?.tag || "Next.js");
   const [readTime, setReadTime] = useState(editingPost?.readTime || "5 min");
   const [excerpt, setExcerpt] = useState(editingPost?.excerpt || "");
-  const [content, setContent] = useState(editingPost?.content || "");
+  const [content, setContent] = useState("");
   const [activeTab, setActiveTab] = useState<"editor" | "preview">("editor");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
   const [uploadingInline, setUploadingInline] = useState(false);
+  const [inlineImages, setInlineImages] = useState<{ id: string; dataUrl: string }[]>([]);
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const fileInputCoverRef = useRef<HTMLInputElement | null>(null);
@@ -34,9 +35,33 @@ export default function BlogForm({ createAction, updateAction, editingPost, onCa
       setTag(editingPost.tag || "");
       setReadTime(editingPost.readTime || "5 min");
       setExcerpt(editingPost.excerpt || "");
-      setContent(editingPost.content || "");
+      
+      // Parse markdown content, extract base64 data urls, and replace with short placeholders
+      const initialInlineImages: { id: string; dataUrl: string }[] = [];
+      let imgCounter = 1;
+      const parsedContent = (editingPost.content || "").replace(
+        /!\[(.*?)\]\((data:image\/[a-zA-Z+.-]+;base64,[a-zA-Z0-9+/=]+)\)/g,
+        (match: string, alt: string, base64: string) => {
+          const id = `img-${imgCounter++}`;
+          initialInlineImages.push({ id, dataUrl: base64 });
+          return `![${alt}](${id})`;
+        }
+      );
+      
+      setInlineImages(initialInlineImages);
+      setContent(parsedContent);
+    } else {
+      setContent("");
+      setInlineImages([]);
     }
   }, [editingPost]);
+
+  const getResolvedContent = (rawText: string) => {
+    return rawText.replace(/\((img-\d+)\)/g, (match: string, key: string) => {
+      const found = inlineImages.find(img => img.id === key);
+      return found ? `(${found.dataUrl})` : match;
+    });
+  };
 
   const isImageUrl = (val: string) => {
     return val && (val.startsWith("http://") || val.startsWith("https://") || val.startsWith("/") || val.startsWith("data:image"));
@@ -103,7 +128,9 @@ export default function BlogForm({ createAction, updateAction, editingPost, onCa
     setUploadingInline(true);
     try {
       const base64Image = await compressAndConvertToBase64(file);
-      insertFormat(`\n![${file.name.replace(/\.[^/.]+$/, "")}](`, `)\n`, base64Image);
+      const nextId = `img-${inlineImages.length + 1}`;
+      setInlineImages((prev) => [...prev, { id: nextId, dataUrl: base64Image }]);
+      insertFormat(`\n![${file.name.replace(/\.[^/.]+$/, "")}](`, `)\n`, nextId);
     } catch (err) {
       alert("Error al cargar la imagen para el artículo.");
     } finally {
@@ -432,9 +459,9 @@ export default function BlogForm({ createAction, updateAction, editingPost, onCa
               </button>
             </div>
 
+            <input type="hidden" name="content" value={getResolvedContent(content)} />
             <textarea
               ref={textareaRef}
-              name="content"
               placeholder="Escribe aquí tu artículo completo... Puedes usar la barra superior para agregar negritas, títulos y fotos dentro del texto."
               value={content}
               onChange={(e) => handleContentChange(e.target.value)}
@@ -449,6 +476,64 @@ export default function BlogForm({ createAction, updateAction, editingPost, onCa
                 fontSize: "0.95rem",
               }}
             />
+
+            {/* Attached Images Tray */}
+            {inlineImages.length > 0 && (
+              <div
+                style={{
+                  marginTop: "12px",
+                  padding: "12px 16px",
+                  background: "var(--bg-card)",
+                  borderRadius: "10px",
+                  border: "1px solid var(--border-color)",
+                }}
+              >
+                <div style={{ fontSize: "0.82rem", color: "var(--text-muted)", marginBottom: "8px", fontWeight: 600 }}>
+                  🖼️ Fotos agregadas al artículo ({inlineImages.length}):
+                </div>
+                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                  {inlineImages.map((img) => (
+                    <div
+                      key={img.id}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        padding: "6px 10px",
+                        background: "var(--bg-secondary)",
+                        borderRadius: "8px",
+                        border: "1px solid var(--border-glass)",
+                      }}
+                    >
+                      <img
+                        src={img.dataUrl}
+                        alt={img.id}
+                        style={{ width: "32px", height: "32px", borderRadius: "6px", objectFit: "cover" }}
+                      />
+                      <span style={{ fontSize: "0.78rem", fontFamily: "monospace", color: "var(--accent-primary)", fontWeight: 600 }}>
+                        {img.id}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => insertFormat(`\n![foto](`, `)\n`, img.id)}
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          color: "var(--text-muted)",
+                          fontSize: "0.75rem",
+                          cursor: "pointer",
+                          padding: "2px 4px",
+                          textDecoration: "underline",
+                        }}
+                        title="Reinsertar etiqueta en el texto"
+                      >
+                        Insertar
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <div style={{ display: "flex", gap: "12px", marginTop: "6px" }}>
@@ -522,7 +607,7 @@ export default function BlogForm({ createAction, updateAction, editingPost, onCa
 
           {/* Contenido formateado con imágenes reales */}
           <div style={{ fontSize: "1.05rem", lineHeight: 1.8, color: "var(--text-secondary)" }}>
-            <MarkdownRenderer content={content || "Escribe contenido en el editor para previsualizarlo aquí..."} />
+            <MarkdownRenderer content={getResolvedContent(content) || "Escribe contenido en el editor para previsualizarlo aquí..."} />
           </div>
 
           {/* Interacciones simuladas */}

@@ -91,8 +91,35 @@ export default function MarkdownRenderer({ content, style }: MarkdownRendererPro
       return;
     }
 
+    // Direct Data URL or Image URL on a single line
+    if (trimmed.startsWith("data:image/") || (trimmed.startsWith("http") && /\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i.test(trimmed))) {
+      elements.push(
+        <figure key={`raw-img-${index}`} style={{ margin: "28px 0", textAlign: "center" }}>
+          <img
+            src={trimmed}
+            alt="Imagen del artículo"
+            style={{
+              maxWidth: "100%",
+              maxHeight: "520px",
+              width: "auto",
+              height: "auto",
+              objectFit: "contain",
+              borderRadius: "14px",
+              boxShadow: "0 8px 30px rgba(0,0,0,0.18)",
+              border: "1px solid var(--border-color)",
+              display: "inline-block",
+            }}
+            onError={(e) => {
+              (e.target as HTMLElement).style.display = "none";
+            }}
+          />
+        </figure>
+      );
+      return;
+    }
+
     // Image Markdown: ![alt](url)
-    const imageMatch = trimmed.match(/^!\[(.*?)\]\((.*?)\)$/);
+    const imageMatch = trimmed.match(/^!\[([\s\S]*?)\]\(([\s\S]*?)\)$/);
     if (imageMatch) {
       const altText = imageMatch[1] || "Imagen del artículo";
       const imageUrl = imageMatch[2];
@@ -116,7 +143,7 @@ export default function MarkdownRenderer({ content, style }: MarkdownRendererPro
               (e.target as HTMLElement).style.display = "none";
             }}
           />
-          {altText && altText !== "Imagen" && altText !== "image" && (
+          {altText && altText !== "Imagen" && altText !== "image" && altText !== "foto" && (
             <figcaption
               style={{
                 fontSize: "0.85rem",
