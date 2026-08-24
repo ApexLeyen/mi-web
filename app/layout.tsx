@@ -71,7 +71,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: "google3688bf7ab7567394",
+    google: "7e8UpR4Hbqhec9vTrDv01EC6QE_g_ze8kGXzJsq7O2U",
   },
   manifest: "/manifest.json",
 };
@@ -107,6 +107,7 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <head>
+        <meta name="google-site-verification" content="7e8UpR4Hbqhec9vTrDv01EC6QE_g_ze8kGXzJsq7O2U" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
