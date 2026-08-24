@@ -3,32 +3,97 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider/ThemeProvider";
 import PublicLayoutWrapper from "@/components/PublicLayoutWrapper/PublicLayoutWrapper";
 
+const BASE_URL = "https://munecotecnology.workers.dev";
+
 export const metadata: Metadata = {
-  title: "Muñeco Tecnology — Transformando ideas en soluciones digitales",
+  metadataBase: new URL(BASE_URL),
+  title: {
+    default: "Muñeco Tecnology — Desarrollo de Apps y Software",
+    template: "%s | Muñeco Tecnology",
+  },
   description:
-    "Plataforma oficial de Muñeco Tecnology. Descarga apps, conoce proyectos y contrata los mejores servicios de desarrollo de software, aplicaciones y soluciones tecnológicas.",
+    "Muñeco Tecnology: desarrollo de aplicaciones Android, software a medida y soluciones digitales. Descarga apps, conoce proyectos y contrata servicios de desarrollo.",
   keywords: [
     "Muñeco Tecnology",
-    "apps APK",
+    "apps APK Android",
     "desarrollo de software",
-    "portafolio",
-    "desarrollador",
     "aplicaciones Android",
+    "portafolio desarrollador",
+    "programador freelance",
+    "soluciones digitales",
+    "descargar apps gratis",
+    "desarrollo web Next.js",
   ],
+  authors: [{ name: "Muñeco Tecnology", url: BASE_URL }],
+  creator: "Muñeco Tecnology",
+  publisher: "Muñeco Tecnology",
+  category: "technology",
+  alternates: {
+    canonical: BASE_URL,
+  },
   icons: {
     icon: "/logo.png",
     apple: "/logo.png",
+    shortcut: "/logo.png",
   },
   openGraph: {
-    title: "Muñeco Tecnology",
-    description: "Transformando ideas en soluciones digitales.",
+    title: "Muñeco Tecnology — Desarrollo de Apps y Software",
+    description:
+      "Aplicaciones Android, software a medida y soluciones digitales. Descarga apps y conoce los proyectos de Muñeco Tecnology.",
+    url: BASE_URL,
+    siteName: "Muñeco Tecnology",
     type: "website",
+    locale: "es_ES",
+    images: [
+      {
+        url: `${BASE_URL}/logo.png`,
+        width: 512,
+        height: 512,
+        alt: "Logo de Muñeco Tecnology",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Muñeco Tecnology — Desarrollo de Apps y Software",
+    description: "Apps Android, software a medida y soluciones digitales.",
+    images: [`${BASE_URL}/logo.png`],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
   manifest: "/manifest.json",
 };
 
 export const viewport: Viewport = {
   themeColor: "#7c3aed",
+  width: "device-width",
+  initialScale: 1,
+};
+
+// JSON-LD Structured Data for Google Rich Results
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Muñeco Tecnology",
+  url: BASE_URL,
+  logo: `${BASE_URL}/logo.png`,
+  description:
+    "Desarrollo de aplicaciones Android, software a medida y soluciones tecnológicas digitales.",
+  sameAs: [],
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "customer support",
+    availableLanguage: "Spanish",
+  },
 };
 
 export default function RootLayout({
@@ -38,6 +103,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body>
         <ThemeProvider>
           <PublicLayoutWrapper>
