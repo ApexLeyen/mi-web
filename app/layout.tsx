@@ -70,6 +70,9 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+  verification: {
+    google: "google3688bf7ab7567394",
+  },
   manifest: "/manifest.json",
 };
 
