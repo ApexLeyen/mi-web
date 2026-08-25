@@ -1,10 +1,25 @@
 import { MetadataRoute } from "next";
+import prisma from "@/lib/prisma";
 
-// Update this with your real production URL
 const BASE_URL = "https://munecotecnology.workers.dev";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  return [
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  let postRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const posts = await prisma.post.findMany({
+      select: { id: true, updatedAt: true },
+    });
+    postRoutes = posts.map((post) => ({
+      url: `${BASE_URL}/blog/${post.id}`,
+      lastModified: post.updatedAt,
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    }));
+  } catch (e) {
+    // fallback if DB query fails during build
+  }
+
+  const staticRoutes: MetadataRoute.Sitemap = [
     {
       url: BASE_URL,
       lastModified: new Date(),
@@ -54,4 +69,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.3,
     },
   ];
+
+  return [...staticRoutes, ...postRoutes];
 }
+
