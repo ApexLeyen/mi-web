@@ -3,7 +3,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider/ThemeProvider";
 import PublicLayoutWrapper from "@/components/PublicLayoutWrapper/PublicLayoutWrapper";
 
-const BASE_URL = "https://munecotecnology.workers.dev";
+const BASE_URL = "https://my-web.apexleyen2515.workers.dev";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),

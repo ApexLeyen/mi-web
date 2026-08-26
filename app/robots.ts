@@ -9,7 +9,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/admin", "/admin/", "/api/"],
       },
     ],
-    sitemap: "https://munecotecnology.workers.dev/sitemap.xml",
-    host: "https://munecotecnology.workers.dev",
+    sitemap: "https://my-web.apexleyen2515.workers.dev/sitemap.xml",
+    host: "https://my-web.apexleyen2515.workers.dev",
   };
 }
