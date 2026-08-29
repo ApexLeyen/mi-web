@@ -1,0 +1,125 @@
+.shareContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 20px 0;
+  padding: 18px 22px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+}
+
+.shareContainer.compact {
+  padding: 10px 14px;
+  margin: 10px 0;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.shareLabel {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.buttonsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.shareBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: 50px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.shareBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+.nativeBtn {
+  background: var(--accent-gradient);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 4px 15px var(--accent-glow);
+}
+
+.nativeBtn:hover {
+  filter: brightness(1.1);
+}
+
+.whatsappBtn:hover {
+  background: #25d366;
+  color: #ffffff;
+  border-color: #25d366;
+}
+
+.telegramBtn:hover {
+  background: #0088cc;
+  color: #ffffff;
+  border-color: #0088cc;
+}
+
+.facebookBtn:hover {
+  background: #1877f2;
+  color: #ffffff;
+  border-color: #1877f2;
+}
+
+.twitterBtn:hover {
+  background: #000000;
+  color: #ffffff;
+  border-color: #333333;
+}
+
+.copyBtn {
+  background: var(--bg-card);
+}
+
+.copyBtn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+.copyBtn.copied {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: #10b981;
+  color: #10b981;
+}
+
+@media (max-width: 600px) {
+  .shareContainer {
+    padding: 14px 16px;
+  }
+  
+  .buttonsRow {
+    gap: 8px;
+  }
+
+  .shareBtn {
+    padding: 8px 12px;
+    font-size: 0.82rem;
+  }
+}

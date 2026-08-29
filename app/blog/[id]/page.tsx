@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import MarkdownRenderer from '@/components/MarkdownRenderer/MarkdownRenderer';
+import ShareButtons from '@/components/ShareButtons/ShareButtons';
+import { Heart, MessageSquare, ArrowLeft } from 'lucide-react';
 
 export default function BlogPostPage() {
   const params = useParams();
@@ -121,29 +123,47 @@ export default function BlogPostPage() {
             </div>
           </header>
 
-          <div style={{ marginBottom: '50px' }}>
+          <div style={{ marginBottom: '40px' }}>
             <MarkdownRenderer content={post.content} />
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '60px' }}>
-            <button 
-              onClick={handleLike}
-              style={{ 
-                background: 'rgba(255,255,255,0.05)', 
-                border: '1px solid var(--border-glass)', 
-                padding: '12px 30px', 
-                borderRadius: '30px',
-                fontSize: '1.1rem',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                color: 'var(--text-primary)',
-                transition: 'all 0.2s'
-              }}
-            >
-              ❤️ Dar Like <span style={{ fontWeight: 'bold' }}>({post.likes})</span>
-            </button>
+          {/* Social Share & Like Bar */}
+          <div style={{ margin: '40px 0', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <button 
+                onClick={handleLike}
+                style={{ 
+                  background: 'var(--accent-gradient)', 
+                  border: 'none',
+                  boxShadow: '0 6px 20px var(--accent-glow)',
+                  padding: '14px 34px', 
+                  borderRadius: '50px',
+                  fontSize: '1.05rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  color: '#ffffff',
+                  transition: 'transform 0.2s',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
+                onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+              >
+                <Heart size={20} fill="white" />
+                <span>Me Gusta</span>
+                <span style={{ background: 'rgba(255,255,255,0.25)', padding: '2px 10px', borderRadius: '20px', fontSize: '0.9rem' }}>
+                  {post.likes}
+                </span>
+              </button>
+            </div>
+
+            {/* Share Buttons */}
+            <ShareButtons
+              title={`${post.title} — Muñeco Tecnology`}
+              description={post.excerpt || `Lee este interesante artículo sobre ${post.tag} en Muñeco Tecnology.`}
+              label="📢 ¿Te gustó este artículo? ¡Compártelo con un clic!"
+            />
           </div>
         </article>
 
