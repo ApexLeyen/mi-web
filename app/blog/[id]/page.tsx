@@ -53,6 +53,20 @@ export default function BlogPostPage() {
 
   const handleLike = async () => {
     if (!post) return;
+
+    // Check local storage for like count on this device
+    const storageKey = `liked-${id}`;
+    const currentLikesStr = localStorage.getItem(storageKey);
+    const currentLikes = currentLikesStr ? parseInt(currentLikesStr, 10) : 0;
+    
+    if (currentLikes >= 2) {
+      alert('¡Ya diste tus dos "Me Gusta" en este artículo! Gracias por tu apoyo. ❤️');
+      return;
+    }
+    
+    // Increment in local storage
+    localStorage.setItem(storageKey, (currentLikes + 1).toString());
+
     // Optimistic update
     setPost({ ...post, likes: post.likes + 1 });
     try {
@@ -60,6 +74,8 @@ export default function BlogPostPage() {
     } catch (error) {
       console.error('Error liking post:', error);
       setPost({ ...post, likes: post.likes - 1 }); // Revert on error
+      // Revert local storage
+      localStorage.setItem(storageKey, currentLikes.toString());
     }
   };
 

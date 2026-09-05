@@ -49,7 +49,7 @@ export default function Footer() {
                 <GitBranch size={18} />
               </a>
               <a
-                href="https://api.whatsapp.com/send?text=¡Hola!%20Te%20comparto%20la%20página%20oficial%20de%20Muñeco%20Tecnology:%20https://my-web.apexleyen2515.workers.dev"
+                href="https://api.whatsapp.com/send?text=¡Hola!%20Te%20comparto%20la%20página%20oficial%20de%20Muñeco%20Tecnology:%20https://munecotecnology.uk"
                 className={styles.socialBtn}
                 aria-label="WhatsApp"
                 target="_blank"
@@ -59,7 +59,7 @@ export default function Footer() {
                 <MessageCircle size={18} />
               </a>
               <a
-                href="https://t.me/share/url?url=https://my-web.apexleyen2515.workers.dev&text=Conoce%20Muñeco%20Tecnology"
+                href="https://t.me/share/url?url=https://munecotecnology.uk&text=Conoce%20Muñeco%20Tecnology"
                 className={styles.socialBtn}
                 aria-label="Telegram"
                 target="_blank"
@@ -69,7 +69,7 @@ export default function Footer() {
                 <Send size={18} />
               </a>
               <a
-                href="https://twitter.com/intent/tweet?url=https://my-web.apexleyen2515.workers.dev&text=Conoce%20Muñeco%20Tecnology"
+                href="https://twitter.com/intent/tweet?url=https://munecotecnology.uk&text=Conoce%20Muñeco%20Tecnology"
                 className={styles.socialBtn}
                 aria-label="Twitter / X"
                 target="_blank"

@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 import prisma from "@/lib/prisma";
 
-const BASE_URL = "https://my-web.apexleyen2515.workers.dev";
+const BASE_URL = "https://munecotecnology.uk";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let postRoutes: MetadataRoute.Sitemap = [];
