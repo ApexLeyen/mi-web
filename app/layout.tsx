@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   publisher: "Muñeco Tecnology",
   category: "technology",
   alternates: {
-    canonical: BASE_URL,
+    canonical: "/",
   },
   icons: {
     icon: "/logo.png",
