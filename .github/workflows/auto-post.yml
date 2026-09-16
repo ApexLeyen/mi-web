@@ -1,0 +1,125 @@
+name: 🤖 Auto Blog Post Diario
+
+on:
+  schedule:
+    - cron: '0 13 * * *'  # Todos los días a las 9:00 AM (hora de República Dominicana / EST)
+  workflow_dispatch:       # También se puede ejecutar manualmente desde GitHub
+
+jobs:
+  auto-post:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📝 Generar y publicar artículo con Gemini AI
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          AUTO_POST_SECRET: ${{ secrets.AUTO_POST_SECRET }}
+        run: |
+          node -e "
+          const https = require('https');
+
+          // Lista de temas para rotar cada día
+          const topics = [
+            'consejos para programar mejor en Android con Kotlin',
+            'novedades de inteligencia artificial para desarrolladores en 2025',
+            'cómo optimizar el rendimiento de apps Android',
+            'herramientas gratuitas imprescindibles para desarrolladores web',
+            'cómo crear una API REST con Node.js paso a paso',
+            'mejores prácticas de seguridad en aplicaciones móviles',
+            'cómo publicar tu app en Google Play Store correctamente',
+            'diferencias entre React Native y Android nativo',
+            'tips de UI/UX para apps Android profesionales',
+            'cómo manejar bases de datos locales en Android con Room',
+            'introducción a TypeScript para desarrolladores JavaScript',
+            'cómo usar Git y GitHub en proyectos de desarrollo',
+            'qué es el Clean Code y por qué debes aplicarlo',
+            'cómo mejorar la velocidad de carga de tu sitio web',
+            'introducción al desarrollo con Next.js para principiantes',
+          ];
+
+          const today = new Date().getDay();
+          const topic = topics[Math.floor(Math.random() * topics.length)];
+
+          console.log('Tema de hoy:', topic);
+
+          const prompt = 'Escribe un artículo de blog completo en español sobre: ' + topic + '. ' +
+            'El artículo debe ser útil, educativo y tener entre 500 y 700 palabras. ' +
+            'Responde ÚNICAMENTE con un objeto JSON válido, sin texto adicional, sin bloques markdown. ' +
+            'Usa exactamente esta estructura: ' +
+            '{\"title\": \"título atractivo aquí\", \"excerpt\": \"resumen breve de 1 a 2 oraciones\", ' +
+            '\"content\": \"contenido completo en formato Markdown con subtítulos ## y párrafos\", ' +
+            '\"tag\": \"una de estas exactamente: Android, Tutorial, Tecnología, Programación, Web\", ' +
+            '\"readTime\": \"X min de lectura\", ' +
+            '\"emoji\": \"un emoji relevante al tema\"}';
+
+          const geminiBody = JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { temperature: 0.85, maxOutputTokens: 2000 }
+          });
+
+          const geminiReq = https.request({
+            hostname: 'generativelanguage.googleapis.com',
+            path: '/v1beta/models/gemini-1.5-flash:generateContent?key=' + process.env.GEMINI_API_KEY,
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Content-Length': Buffer.byteLength(geminiBody)
+            }
+          }, (res) => {
+            let data = '';
+            res.on('data', chunk => data += chunk);
+            res.on('end', () => {
+              try {
+                console.log('Respuesta de Gemini recibida...');
+                const geminiRes = JSON.parse(data);
+
+                if (!geminiRes.candidates || !geminiRes.candidates[0]) {
+                  console.error('Error: Gemini no devolvió candidatos', data);
+                  process.exit(1);
+                }
+
+                let text = geminiRes.candidates[0].content.parts[0].text.trim();
+
+                // Limpiar bloques markdown si Gemini los incluye
+                text = text.replace(/^\`\`\`json\n?/, '').replace(/^\`\`\`\n?/, '').replace(/\n?\`\`\`$/, '').trim();
+
+                console.log('Contenido generado, publicando...');
+                const blogData = JSON.parse(text);
+                const postBody = JSON.stringify(blogData);
+
+                const postReq = https.request({
+                  hostname: 'munecotecnology.uk',
+                  path: '/api/auto-post',
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + process.env.AUTO_POST_SECRET,
+                    'Content-Length': Buffer.byteLength(postBody)
+                  }
+                }, (postRes) => {
+                  let postData = '';
+                  postRes.on('data', chunk => postData += chunk);
+                  postRes.on('end', () => {
+                    if (postRes.statusCode === 201) {
+                      console.log('✅ Artículo publicado exitosamente! ID:', JSON.parse(postData).postId);
+                    } else {
+                      console.error('❌ Error al publicar. Status:', postRes.statusCode, 'Respuesta:', postData);
+                      process.exit(1);
+                    }
+                  });
+                });
+
+                postReq.on('error', (e) => { console.error('Error de red al publicar:', e); process.exit(1); });
+                postReq.write(postBody);
+                postReq.end();
+
+              } catch(e) {
+                console.error('Error procesando respuesta de Gemini:', e.message);
+                process.exit(1);
+              }
+            });
+          });
+
+          geminiReq.on('error', (e) => { console.error('Error llamando a Gemini:', e); process.exit(1); });
+          geminiReq.write(geminiBody);
+          geminiReq.end();
+          "

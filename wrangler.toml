@@ -12,3 +12,7 @@ binding = "ASSETS"
 binding = "DB"
 database_name = "my-web-db"
 database_id = "595d41b9-b9a0-49d1-af56-1b778f9b3835"
+
+[vars]
+# La clave secreta real se agrega desde el Dashboard de Cloudflare Workers → Settings → Variables
+AUTO_POST_SECRET = ""
