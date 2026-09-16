@@ -56,70 +56,95 @@ jobs:
             generationConfig: { temperature: 0.85, maxOutputTokens: 2000 }
           });
 
-          const geminiReq = https.request({
+          const geminiReqModels = https.request({
             hostname: 'generativelanguage.googleapis.com',
-            path: '/v1beta/models/gemini-3.6-flash:generateContent?key=' + process.env.GEMINI_API_KEY,
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Content-Length': Buffer.byteLength(geminiBody)
-            }
-          }, (res) => {
-            let data = '';
-            res.on('data', chunk => data += chunk);
-            res.on('end', () => {
-              try {
-                console.log('Respuesta de Gemini recibida...');
-                const geminiRes = JSON.parse(data);
+            path: '/v1beta/models?key=' + process.env.GEMINI_API_KEY,
+            method: 'GET'
+          }, (resModels) => {
+            let dataModels = '';
+            resModels.on('data', chunk => dataModels += chunk);
+            resModels.on('end', () => {
+              const modelsList = JSON.parse(dataModels);
+              if(!modelsList.models) {
+                 console.error('Error fetching models:', dataModels);
+                 process.exit(1);
+              }
+              // Find the best available flash model
+              const availableModels = modelsList.models.map(m => m.name);
+              console.log('Modelos disponibles:', availableModels.join(', '));
+              
+              const flashModel = modelsList.models.find(m => m.name.includes('flash') && m.supportedGenerationMethods.includes('generateContent'));
+              const modelName = flashModel ? flashModel.name : 'models/gemini-1.5-flash';
+              console.log('Usando el modelo:', modelName);
 
-                if (!geminiRes.candidates || !geminiRes.candidates[0]) {
-                  console.error('Error: Gemini no devolvió candidatos', data);
-                  process.exit(1);
+              const geminiReq = https.request({
+                hostname: 'generativelanguage.googleapis.com',
+                path: '/v1beta/' + modelName + ':generateContent?key=' + process.env.GEMINI_API_KEY,
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Content-Length': Buffer.byteLength(geminiBody)
                 }
+              }, (res) => {
+                let data = '';
+                res.on('data', chunk => data += chunk);
+                res.on('end', () => {
+                  try {
+                    console.log('Respuesta de Gemini recibida...');
+                    const geminiRes = JSON.parse(data);
 
-                let text = geminiRes.candidates[0].content.parts[0].text.trim();
-
-                // Limpiar bloques markdown si Gemini los incluye
-                text = text.replace(/^\`\`\`json\n?/, '').replace(/^\`\`\`\n?/, '').replace(/\n?\`\`\`$/, '').trim();
-
-                console.log('Contenido generado, publicando...');
-                const blogData = JSON.parse(text);
-                const postBody = JSON.stringify(blogData);
-
-                const postReq = https.request({
-                  hostname: 'munecotecnology.uk',
-                  path: '/api/auto-post',
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + process.env.AUTO_POST_SECRET,
-                    'Content-Length': Buffer.byteLength(postBody)
-                  }
-                }, (postRes) => {
-                  let postData = '';
-                  postRes.on('data', chunk => postData += chunk);
-                  postRes.on('end', () => {
-                    if (postRes.statusCode === 201) {
-                      console.log('✅ Artículo publicado exitosamente! ID:', JSON.parse(postData).postId);
-                    } else {
-                      console.error('❌ Error al publicar. Status:', postRes.statusCode, 'Respuesta:', postData);
+                    if (!geminiRes.candidates || !geminiRes.candidates[0]) {
+                      console.error('Error: Gemini no devolvió candidatos', data);
                       process.exit(1);
                     }
-                  });
+
+                    let text = geminiRes.candidates[0].content.parts[0].text.trim();
+
+                    // Limpiar bloques markdown si Gemini los incluye
+                    text = text.replace(/^\`\`\`json\n?/, '').replace(/^\`\`\`\n?/, '').replace(/\n?\`\`\`$/, '').trim();
+
+                    console.log('Contenido generado, publicando...');
+                    const blogData = JSON.parse(text);
+                    const postBody = JSON.stringify(blogData);
+
+                    const postReq = https.request({
+                      hostname: 'munecotecnology.uk',
+                      path: '/api/auto-post',
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + process.env.AUTO_POST_SECRET,
+                        'Content-Length': Buffer.byteLength(postBody)
+                      }
+                    }, (postRes) => {
+                      let postData = '';
+                      postRes.on('data', chunk => postData += chunk);
+                      postRes.on('end', () => {
+                        if (postRes.statusCode === 201) {
+                          console.log('✅ Artículo publicado exitosamente! ID:', JSON.parse(postData).postId);
+                        } else {
+                          console.error('❌ Error al publicar. Status:', postRes.statusCode, 'Respuesta:', postData);
+                          process.exit(1);
+                        }
+                      });
+                    });
+
+                    postReq.on('error', (e) => { console.error('Error de red al publicar:', e); process.exit(1); });
+                    postReq.write(postBody);
+                    postReq.end();
+
+                  } catch(e) {
+                    console.error('Error procesando respuesta de Gemini:', e.message);
+                    process.exit(1);
+                  }
                 });
+              });
 
-                postReq.on('error', (e) => { console.error('Error de red al publicar:', e); process.exit(1); });
-                postReq.write(postBody);
-                postReq.end();
-
-              } catch(e) {
-                console.error('Error procesando respuesta de Gemini:', e.message);
-                process.exit(1);
-              }
+              geminiReq.on('error', (e) => { console.error('Error llamando a Gemini:', e); process.exit(1); });
+              geminiReq.write(geminiBody);
+              geminiReq.end();
             });
           });
-
-          geminiReq.on('error', (e) => { console.error('Error llamando a Gemini:', e); process.exit(1); });
-          geminiReq.write(geminiBody);
-          geminiReq.end();
+          geminiReqModels.on('error', (e) => { console.error('Error fetching models list:', e); process.exit(1); });
+          geminiReqModels.end();
           "
