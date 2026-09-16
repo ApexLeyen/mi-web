@@ -177,14 +177,10 @@ jobs:
                 postReq.write(postBody);
                 postReq.end();
 
-              } catch(e) {
-                console.error('Error procesando respuesta de Gemini:', e.message);
+              } catch (e) {
+                console.error('Error procesando respuesta o publicando:', e.message);
                 if (typeof text !== 'undefined') console.error('Texto recibido que falló:', text);
                 process.exit(1);
               }
-            } catch (err) {
-              console.error('Error en ejecución:', err.message);
-              process.exit(1);
-            }
-          })();
-          "
+            })();
+            "
