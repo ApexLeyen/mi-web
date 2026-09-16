@@ -53,7 +53,11 @@ jobs:
 
           const geminiBody = JSON.stringify({
             contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: { temperature: 0.85, maxOutputTokens: 2000 }
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 3000,
+              responseMimeType: 'application/json'
+            }
           });
 
           const geminiReq = https.request({
@@ -83,8 +87,15 @@ jobs:
 
                 let text = geminiRes.candidates[0].content.parts[0].text.trim();
 
-                // Limpiar bloques markdown
-                text = text.replace(/^\`\`\`json\n?/, '').replace(/^\`\`\`\n?/, '').replace(/\n?\`\`\`$/, '').trim();
+                // Quitar bloques markdown si los hay
+                text = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+
+                // Asegurar que tomamos el objeto JSON limpio entre { y }
+                const firstBrace = text.indexOf('{');
+                const lastBrace = text.lastIndexOf('}');
+                if (firstBrace !== -1 && lastBrace !== -1) {
+                  text = text.substring(firstBrace, lastBrace + 1);
+                }
 
                 console.log('Contenido generado, publicando...');
                 const blogData = JSON.parse(text);
@@ -118,6 +129,7 @@ jobs:
 
               } catch(e) {
                 console.error('Error procesando respuesta de Gemini:', e.message);
+                if (typeof text !== 'undefined') console.error('Texto recibido que falló:', text);
                 process.exit(1);
               }
             });
