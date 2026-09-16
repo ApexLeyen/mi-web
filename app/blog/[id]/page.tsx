@@ -123,8 +123,12 @@ export default function BlogPostPage() {
         <article>
           <header style={{ marginBottom: '40px' }}>
             {(post.emoji.startsWith("http") || post.emoji.startsWith("/") || post.emoji.startsWith("data:image")) ? (
-              <div style={{ width: '100%', maxHeight: '420px', borderRadius: '16px', overflow: 'hidden', marginBottom: '24px', background: 'var(--bg-secondary)', display: 'flex', justifyContent: 'center' }}>
+              <div style={{ position: 'relative', width: '100%', maxHeight: '420px', borderRadius: '16px', overflow: 'hidden', marginBottom: '24px', background: 'var(--bg-secondary)', display: 'flex', justifyContent: 'center' }}>
                 <img src={post.emoji} alt={post.title} style={{ width: '100%', maxHeight: '420px', objectFit: 'cover' }} />
+                <div style={{ position: 'absolute', top: '16px', left: '16px', background: 'rgba(10, 10, 20, 0.82)', backdropFilter: 'blur(8px)', padding: '6px 14px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid rgba(255,255,255,0.2)', boxShadow: '0 4px 14px rgba(0,0,0,0.5)' }}>
+                  <img src="/logo.png" alt="Muñeco Tecnology" style={{ height: '24px', width: 'auto', objectFit: 'contain' }} />
+                  <span style={{ color: '#fff', fontSize: '0.85rem', fontWeight: 800, letterSpacing: '0.8px' }}>MUÑECO TECNOLOGY</span>
+                </div>
               </div>
             ) : (
               <div style={{ fontSize: '4rem', marginBottom: '20px' }}>{post.emoji}</div>

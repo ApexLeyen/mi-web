@@ -100,12 +100,12 @@ jobs:
                 const blogData = JSON.parse(text);
                 console.log('✅ Contenido generado:', blogData.title);
 
-                // Generar ilustración futurista de alta tecnología estilo Muñeco Tecnology
+                // Generar ilustración futurista limpia sin marcas de agua ni texto
                 const techPrompt = (blogData.imagePrompt || blogData.title) + 
-                  ', futuristic smartphone glowing with vibrant neon cyan and electric blue AI neural network on screen, dark cyberpunk background, high tech UI HUD elements, 8k render, octane unreal engine 5 style';
+                  ', futuristic smartphone floating in dark space, vibrant neon cyan and electric blue glowing AI neural network and circuits, dark clean cyberpunk background, 8k render, octane unreal engine 5 style, clean 3d render, completely clean, no text, no letters, no words, no watermark, no logos, no typography, no banner, no stock photo watermark, pure digital art';
 
-                console.log('🎨 Generando ilustración con IA...');
-                const imgUrl = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(techPrompt) + '?width=800&height=450&nologo=true';
+                console.log('🎨 Generando ilustración limpia con IA (Flux)...');
+                const imgUrl = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(techPrompt) + '?width=800&height=450&nologo=true&model=flux';
 
                 let coverImage = '🤖';
                 try {
