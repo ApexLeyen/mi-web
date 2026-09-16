@@ -43,13 +43,13 @@ jobs:
 
           const prompt = 'Escribe un artículo de blog completo en español sobre: ' + topic + '. ' +
             'El artículo debe ser útil, educativo y tener entre 500 y 700 palabras. ' +
-            'Responde ÚNICAMENTE con un objeto JSON válido, sin texto adicional, sin bloques markdown. ' +
+            'Responde ÚNICAMENTE con un objeto JSON válido, sin bloques markdown. ' +
             'Usa exactamente esta estructura: ' +
             '{\"title\": \"título atractivo aquí\", \"excerpt\": \"resumen breve de 1 a 2 oraciones\", ' +
             '\"content\": \"contenido completo en formato Markdown con subtítulos ## y párrafos\", ' +
             '\"tag\": \"una de estas exactamente: Android, Tutorial, Tecnología, Programación, Web\", ' +
             '\"readTime\": \"X min de lectura\", ' +
-            '\"emoji\": \"un emoji relevante al tema\"}';
+            '\"imagePrompt\": \"short English description of the futuristic device or AI concept for this topic\"}';
 
           const geminiBody = JSON.stringify({
             contents: [{ parts: [{ text: prompt }] }],
@@ -71,7 +71,7 @@ jobs:
           }, (res) => {
             let data = '';
             res.on('data', chunk => data += chunk);
-            res.on('end', () => {
+            res.on('end', async () => {
               try {
                 const geminiRes = JSON.parse(data);
 
@@ -97,8 +97,43 @@ jobs:
                   text = text.substring(firstBrace, lastBrace + 1);
                 }
 
-                console.log('Contenido generado, publicando...');
                 const blogData = JSON.parse(text);
+                console.log('✅ Contenido generado:', blogData.title);
+
+                // Generar ilustración futurista de alta tecnología estilo Muñeco Tecnology
+                const techPrompt = (blogData.imagePrompt || blogData.title) + 
+                  ', futuristic smartphone glowing with vibrant neon cyan and electric blue AI neural network on screen, dark cyberpunk background, high tech UI HUD elements, 8k render, octane unreal engine 5 style';
+
+                console.log('🎨 Generando ilustración con IA...');
+                const imgUrl = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(techPrompt) + '?width=800&height=450&nologo=true';
+
+                let coverImage = '🤖';
+                try {
+                  coverImage = await new Promise((resolve) => {
+                    https.get(imgUrl, (imgRes) => {
+                      if (imgRes.statusCode !== 200) {
+                        console.warn('⚠️ No se pudo generar la imagen (status ' + imgRes.statusCode + '), usando emoji');
+                        return resolve('🤖');
+                      }
+                      const chunks = [];
+                      imgRes.on('data', c => chunks.push(c));
+                      imgRes.on('end', () => {
+                        const buf = Buffer.concat(chunks);
+                        console.log('🖼️ Ilustración descargada con éxito (' + (buf.length / 1024).toFixed(1) + ' KB)');
+                        resolve('data:image/jpeg;base64,' + buf.toString('base64'));
+                      });
+                    }).on('error', (err) => {
+                      console.warn('⚠️ Error de red al descargar imagen:', err.message);
+                      resolve('🤖');
+                    });
+                  });
+                } catch (imgErr) {
+                  console.warn('⚠️ Error al procesar imagen:', imgErr.message);
+                }
+
+                blogData.emoji = coverImage;
+
+                console.log('🚀 Publicando artículo en munecotecnology.uk...');
                 const postBody = JSON.stringify(blogData);
 
                 const postReq = https.request({
@@ -115,7 +150,7 @@ jobs:
                   postRes.on('data', chunk => postData += chunk);
                   postRes.on('end', () => {
                     if (postRes.statusCode === 201) {
-                      console.log('✅ Artículo publicado exitosamente! ID:', JSON.parse(postData).postId);
+                      console.log('✅ ¡Artículo con ilustración publicado exitosamente! ID:', JSON.parse(postData).postId);
                     } else {
                       console.error('❌ Error al publicar. Status:', postRes.statusCode, 'Respuesta:', postData);
                       process.exit(1);
