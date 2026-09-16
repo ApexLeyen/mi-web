@@ -58,7 +58,7 @@ jobs:
 
           const geminiReq = https.request({
             hostname: 'generativelanguage.googleapis.com',
-            path: '/v1beta/models/gemini-1.5-flash:generateContent?key=' + process.env.GEMINI_API_KEY,
+            path: '/v1beta/models/gemini-3.6-flash:generateContent?key=' + process.env.GEMINI_API_KEY,
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -69,11 +69,15 @@ jobs:
             res.on('data', chunk => data += chunk);
             res.on('end', () => {
               try {
-                console.log('Respuesta cruda de Gemini:', data);
                 const geminiRes = JSON.parse(data);
 
+                if (geminiRes.error) {
+                  console.error('❌ Error devuelto por Gemini API:', JSON.stringify(geminiRes.error, null, 2));
+                  process.exit(1);
+                }
+
                 if (!geminiRes.candidates || !geminiRes.candidates[0]) {
-                  console.error('Error: Gemini no devolvió candidatos');
+                  console.error('❌ Error: Gemini no devolvió candidatos. Respuesta:', data);
                   process.exit(1);
                 }
 
