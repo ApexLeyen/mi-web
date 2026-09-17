@@ -113,6 +113,17 @@ export default function BlogPostPage() {
 
   if (!post) return null;
 
+  // Extract bullets from content
+  let bullets: string[] = [];
+  let cleanContent = post.content || '';
+  const match = cleanContent.match(/<!-- BULLETS: (.*?) -->/);
+  if (match) {
+    try {
+      bullets = JSON.parse(match[1]);
+      cleanContent = cleanContent.replace(/<!-- BULLETS: (.*?) -->\n\n?/, '');
+    } catch(e) {}
+  }
+
   return (
     <div style={{ paddingTop: '100px', minHeight: '100vh', background: 'var(--bg-primary)' }}>
       <div className="container" style={{ maxWidth: '800px' }}>
@@ -123,24 +134,83 @@ export default function BlogPostPage() {
         <article>
           <header style={{ marginBottom: '40px' }}>
             {(post.emoji.startsWith("http") || post.emoji.startsWith("/") || post.emoji.startsWith("data:image")) ? (
-              <div style={{ position: 'relative', width: '100%', maxHeight: '420px', borderRadius: '16px', overflow: 'hidden', marginBottom: '24px', background: 'var(--bg-secondary)', display: 'flex', justifyContent: 'center' }}>
-                <img src={post.emoji} alt={post.title} style={{ width: '100%', maxHeight: '420px', objectFit: 'cover', objectPosition: 'center top', transform: 'scale(1.08)' }} />
+              <div style={{ position: 'relative', width: '100%', minHeight: '400px', borderRadius: '16px', overflow: 'hidden', marginBottom: '30px', background: '#050b14', display: 'flex', flexWrap: 'wrap' }}>
+                {/* Background Image */}
+                <div style={{ position: 'absolute', inset: 0 }}>
+                   <img src={post.emoji} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', filter: 'brightness(0.35) contrast(1.2)' }} />
+                </div>
+                
+                {/* Infographic Overlay */}
+                <div style={{ position: 'relative', zIndex: 1, padding: '40px 30px 20px', display: 'flex', flexDirection: 'column', width: '100%', minHeight: '100%' }}>
+                   
+                   {/* Logo */}
+                   <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#fff', padding: '6px 16px', borderRadius: '50px', alignSelf: 'flex-start', marginBottom: '30px' }}>
+                      <img src="/logo.png" alt="Muñeco Tecnology" style={{ height: '22px', width: 'auto' }} />
+                      <span style={{ color: '#000', fontSize: '0.85rem', fontWeight: 900, letterSpacing: '0.5px' }}>MUÑECO TECNOLOGY</span>
+                   </div>
+                   
+                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '30px', flex: 1, alignItems: 'center', marginBottom: '30px' }}>
+                     {/* Title Section */}
+                     <div style={{ flex: '1 1 300px' }}>
+                        <h1 style={{ fontSize: 'clamp(2rem, 5vw, 2.6rem)', color: '#fff', textShadow: '0 0 15px rgba(0,255,255,0.4)', lineHeight: 1.2, margin: 0, fontWeight: 900, textTransform: 'uppercase' }}>
+                           {post.title}
+                        </h1>
+                        <div style={{ display: 'flex', gap: '15px', color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', alignItems: 'center', marginTop: '20px' }}>
+                          <span style={{ background: 'rgba(0,255,255,0.15)', color: '#0ff', border: '1px solid rgba(0,255,255,0.3)', padding: '4px 12px', borderRadius: '20px' }}>{post.tag}</span>
+                          <span>⏱ {post.readTime}</span>
+                          <span>📅 {new Date(post.createdAt).toLocaleDateString('es-ES')}</span>
+                        </div>
+                     </div>
+
+                     {/* Bullets Section */}
+                     {bullets.length > 0 && (
+                       <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', gap: '12px', background: 'rgba(0, 10, 20, 0.6)', padding: '24px', borderRadius: '16px', backdropFilter: 'blur(12px)', border: '1px solid rgba(0,255,255,0.15)', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
+                         {bullets.map((b, i) => {
+                           const parts = b.split('-');
+                           const title = parts[0];
+                           const desc = parts.slice(1).join('-');
+                           return (
+                             <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                               <div style={{ color: '#0ff', marginTop: '4px', fontSize: '1.2rem', lineHeight: 1 }}>✧</div>
+                               <div style={{ fontSize: '0.9rem', color: '#e2e8f0', lineHeight: 1.5 }}>
+                                 <strong style={{ color: '#0ff', display: 'block', fontSize: '0.95rem' }}>{title?.trim()}</strong>
+                                 {desc && <span>{desc.trim()}</span>}
+                               </div>
+                             </div>
+                           );
+                         })}
+                       </div>
+                     )}
+                   </div>
+                   
+                   {/* Footer */}
+                   <div style={{ width: '100%', borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: '15px', display: 'flex', justifyContent: 'center', gap: '20px', fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', flexWrap: 'wrap', fontWeight: 600, letterSpacing: '0.5px' }}>
+                     <span>munecotechnology.com</span>
+                     <span style={{ color: '#0ff' }}>|</span>
+                     <span>Muñeco Technology</span>
+                     <span style={{ color: '#0ff' }}>|</span>
+                     <span>@munecotechnology</span>
+                   </div>
+                   
+                </div>
               </div>
             ) : (
-              <div style={{ fontSize: '4rem', marginBottom: '20px' }}>{post.emoji}</div>
+              <>
+                <div style={{ fontSize: '4rem', marginBottom: '20px' }}>{post.emoji}</div>
+                <h1 style={{ fontSize: '2.5rem', marginBottom: '15px' }}>{post.title}</h1>
+                <div style={{ display: 'flex', gap: '15px', color: 'var(--text-muted)', fontSize: '0.9rem', alignItems: 'center' }}>
+                  <span style={{ background: 'var(--accent-primary)', color: '#fff', padding: '4px 12px', borderRadius: '20px' }}>
+                    {post.tag}
+                  </span>
+                  <span>⏱ {post.readTime}</span>
+                  <span>📅 {new Date(post.createdAt).toLocaleDateString('es-ES')}</span>
+                </div>
+              </>
             )}
-            <h1 style={{ fontSize: '2.5rem', marginBottom: '15px' }}>{post.title}</h1>
-            <div style={{ display: 'flex', gap: '15px', color: 'var(--text-muted)', fontSize: '0.9rem', alignItems: 'center' }}>
-              <span style={{ background: 'var(--accent-primary)', color: '#fff', padding: '4px 12px', borderRadius: '20px' }}>
-                {post.tag}
-              </span>
-              <span>⏱ {post.readTime}</span>
-              <span>📅 {new Date(post.createdAt).toLocaleDateString('es-ES')}</span>
-            </div>
           </header>
 
           <div style={{ marginBottom: '40px' }}>
-            <MarkdownRenderer content={post.content} />
+            <MarkdownRenderer content={cleanContent} />
           </div>
 
           {/* Social Share & Like Bar */}

@@ -36,7 +36,8 @@ Usa exactamente esta estructura:
   "content": "contenido completo en Markdown con subtítulos ##, párrafos y la imagen integrada",
   "tag": "una de estas exactamente: Android, Tutorial, Tecnología, Programación, Web",
   "readTime": "X min de lectura",
-  "imagePrompt": "Crea una portada de tecnología futurista en 8k basada exactamente en la estructura y estilo visual de la imagen de referencia. MANTENER FIJO: - Logo 'MUÑECO TECNOLOGY' exacto en la esquina superior izquierda sobre fondo curvado blanco. - Fondo de ciudad de neón nocturna en tonos negro y azul marino con líneas de red brillante. - Pie de página inferior con redes sociales: munecotechnology.com | Muñeco Technology | @munecotechnology. CAMBIOS DE ESTE TEMA: 1. Título principal (Izquierda): '[PON AQUÍ EL TÍTULO DEL ARTÍCULO EN MAYÚSCULAS]'. Palabras clave en texto brillante azul cian. 2. Ilustración central: [DESCRIBE AQUÍ UN OBJETO HOLOGRÁFICO O CIBERNÉTICO ACORDE AL TEMA]. 3. Columna derecha (7 iconos cian con texto blanco en español): [LISTA AQUÍ 7 PUNTOS CLAVE DEL ARTÍCULO CON FORMATO 'Icono X: TITULO CORTO - Breve descripción']"
+  "imagePrompt": "Un prompt en inglés para generar SOLO EL FONDO de la imagen, sin texto. Ejemplo: 'Dark high tech neon city background with a glowing cyber shield in the center, electric blue lighting, clean 3d render, octane engine, completely clean, no text, no words, no watermark'",
+  "bullets": ["Icono 1 - Descripción corta", "Icono 2 - Descripción corta", "Icono 3 - Descripción corta", "Icono 4 - Descripción corta", "Icono 5 - Descripción corta", "Icono 6 - Descripción corta", "Icono 7 - Descripción corta"]
 }`;
 
 const geminiBody = JSON.stringify({
@@ -115,8 +116,15 @@ async function callGemini(attempt = 1) {
     const blogData = JSON.parse(text);
     console.log('✅ Contenido generado con éxito:', blogData.title);
 
+    // Guardar las viñetas generadas como comentario HTML dentro del contenido
+    if (blogData.bullets && Array.isArray(blogData.bullets)) {
+      blogData.content = `<!-- BULLETS: ${JSON.stringify(blogData.bullets)} -->\n\n` + blogData.content;
+      delete blogData.bullets;
+    }
+
     // Generar ilustración de portada temática con la estructura y texto especificados
-    const techPrompt = blogData.imagePrompt || (blogData.title + ' technology concept');
+    const topicSubject = blogData.imagePrompt || (blogData.title + ' technology concept');
+    const techPrompt = topicSubject + ', dark high tech background, glowing vibrant neon cyan and electric blue lighting, completely clean, no text, no letters, no words, no watermark, pure digital art';
 
     console.log('🎨 Generando portada temática...');
     console.log('📝 Prompt de portada:', techPrompt);
