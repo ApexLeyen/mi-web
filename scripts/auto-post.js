@@ -44,7 +44,7 @@ const geminiBody = JSON.stringify({
   contents: [{ parts: [{ text: prompt }] }],
   generationConfig: {
     temperature: 0.7,
-    maxOutputTokens: 3000,
+    maxOutputTokens: 8192,
     responseMimeType: 'application/json',
   },
 });
@@ -113,7 +113,15 @@ async function callGemini(attempt = 1) {
       text = text.substring(firstBrace, lastBrace + 1);
     }
 
-    const blogData = JSON.parse(text);
+    let blogData;
+    try {
+      blogData = JSON.parse(text);
+    } catch (parseError) {
+      console.error('❌ Error parseando JSON de Gemini. Texto crudo recibido:');
+      console.error(text.substring(0, 500) + '...[recortado]...' + text.substring(text.length - 500));
+      throw parseError;
+    }
+    
     console.log('✅ Contenido generado con éxito:', blogData.title);
 
     // Guardar las viñetas generadas como comentario HTML dentro del contenido
