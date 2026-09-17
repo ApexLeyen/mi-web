@@ -41,15 +41,20 @@ jobs:
 
           console.log('Tema de hoy:', topic);
 
-          const prompt = 'Escribe un artículo de blog completo en español sobre: ' + topic + '. ' +
+          const prompt = 'Eres un redactor y diseñador técnico para el blog de "Muñeco Tecnology". ' +
+            'Escribe un artículo de blog completo en español sobre el tema: \"' + topic + '\". ' +
             'El artículo debe ser útil, educativo y tener entre 500 y 700 palabras. ' +
+            'Dentro del contenido en Markdown, incluye subtítulos ##, explicaciones claras y añade exactamente 1 imagen explicativa relevante en medio del texto usando la sintaxis: ' +
+            '![Ilustración conceptual](https://image.pollinations.ai/prompt/<PROMPT_EN_INGLES_CORTO_DEL_TEMA_SEPARADO_CON_GUIONES-dark-neon-blue-no-text-no-watermark>?width=700&height=380&nologo=true) ' +
+            'donde la URL esté limpia y en minúsculas. ' +
             'Responde ÚNICAMENTE con un objeto JSON válido, sin bloques markdown. ' +
             'Usa exactamente esta estructura: ' +
-            '{\"title\": \"título atractivo aquí\", \"excerpt\": \"resumen breve de 1 a 2 oraciones\", ' +
-            '\"content\": \"contenido completo en formato Markdown con subtítulos ## y párrafos\", ' +
+            '{\"title\": \"título atractivo y profesional\", ' +
+            '\"excerpt\": \"resumen breve de 1 a 2 oraciones para la tarjeta del blog\", ' +
+            '\"content\": \"contenido completo en Markdown con subtítulos ##, párrafos y la imagen integrada\", ' +
             '\"tag\": \"una de estas exactamente: Android, Tutorial, Tecnología, Programación, Web\", ' +
             '\"readTime\": \"X min de lectura\", ' +
-            '\"imagePrompt\": \"short English description of the futuristic device or AI concept for this topic\"}';
+            '\"imagePrompt\": \"A detailed English visual prompt depicting the SPECIFIC SUBJECT of this article in 3D: if database, describe glowing holographic database cylinders and data streams; if backend/API, describe interconnected glowing server network nodes; if clean code or programming, describe luminous 3D code structures; if security, describe futuristic digital shield and cyber circuits; if Android or apps, describe futuristic smartphone with floating holographic UI cards. Depict the specific topic directly.\"}';
 
           const geminiBody = JSON.stringify({
             contents: [{ parts: [{ text: prompt }] }],
@@ -123,11 +128,13 @@ jobs:
                 const blogData = JSON.parse(text);
                 console.log('✅ Contenido generado:', blogData.title);
 
-                // Generar ilustración futurista limpia sin marcas de agua ni texto
-                const techPrompt = (blogData.imagePrompt || blogData.title) + 
-                  ', futuristic smartphone floating in dark space, vibrant neon cyan and electric blue glowing AI neural network, dark clean cyberpunk background, 8k render, octane unreal engine 5 style, clean 3d render, completely clean, no text, no letters, no words, no watermark, no logos, no typography, no banner, no stock photo watermark, pure digital art';
+                // Generar ilustración de portada temática según el tema exacto del artículo
+                const topicSubject = blogData.imagePrompt || (blogData.title + ' technology concept');
+                const techPrompt = topicSubject + 
+                  ', dark high tech background, glowing vibrant neon cyan and electric blue lighting, 8k render, octane unreal engine 5 style, clean 3d render, completely clean, no text, no letters, no words, no watermark, no logos, no typography, no banner, no stock photo watermark, pure digital art';
 
-                console.log('🎨 Generando ilustración limpia con IA...');
+                console.log('🎨 Generando portada temática...');
+                console.log('📝 Prompt:', techPrompt);
                 const imgUrl = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(techPrompt) + '?width=800&height=450&nologo=true';
 
                 let coverImage = '🤖';
