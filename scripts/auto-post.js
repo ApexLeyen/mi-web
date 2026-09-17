@@ -36,7 +36,7 @@ Usa exactamente esta estructura:
   "content": "contenido completo en Markdown con subtítulos ##, párrafos y la imagen integrada",
   "tag": "una de estas exactamente: Android, Tutorial, Tecnología, Programación, Web",
   "readTime": "X min de lectura",
-  "imagePrompt": "A detailed English visual prompt depicting the SPECIFIC SUBJECT of this article in 3D: if database, describe glowing holographic database cylinders and data streams; if backend/API, describe interconnected glowing server network nodes; if clean code or programming, describe luminous 3D code structures; if security, describe futuristic digital shield and cyber circuits; if Android or apps, describe futuristic smartphone with floating holographic UI cards. Depict the specific topic directly."
+  "imagePrompt": "Crea una portada de tecnología futurista en 8k basada exactamente en la estructura y estilo visual de la imagen de referencia. MANTENER FIJO: - Logo 'MUÑECO TECNOLOGY' exacto en la esquina superior izquierda sobre fondo curvado blanco. - Fondo de ciudad de neón nocturna en tonos negro y azul marino con líneas de red brillante. - Pie de página inferior con redes sociales: munecotechnology.com | Muñeco Technology | @munecotechnology. CAMBIOS DE ESTE TEMA: 1. Título principal (Izquierda): '[PON AQUÍ EL TÍTULO DEL ARTÍCULO EN MAYÚSCULAS]'. Palabras clave en texto brillante azul cian. 2. Ilustración central: [DESCRIBE AQUÍ UN OBJETO HOLOGRÁFICO O CIBERNÉTICO ACORDE AL TEMA]. 3. Columna derecha (7 iconos cian con texto blanco en español): [LISTA AQUÍ 7 PUNTOS CLAVE DEL ARTÍCULO CON FORMATO 'Icono X: TITULO CORTO - Breve descripción']"
 }`;
 
 const geminiBody = JSON.stringify({
@@ -115,11 +115,8 @@ async function callGemini(attempt = 1) {
     const blogData = JSON.parse(text);
     console.log('✅ Contenido generado con éxito:', blogData.title);
 
-    // Generar ilustración de portada temática según el tema exacto del artículo
-    const topicSubject = blogData.imagePrompt || (blogData.title + ' technology concept');
-    const techPrompt =
-      topicSubject +
-      ', dark high tech background, glowing vibrant neon cyan and electric blue lighting, 8k render, octane unreal engine 5 style, clean 3d render, completely clean, no text, no letters, no words, no watermark, no logos, no typography, no banner, no stock photo watermark, pure digital art';
+    // Generar ilustración de portada temática con la estructura y texto especificados
+    const techPrompt = blogData.imagePrompt || (blogData.title + ' technology concept');
 
     console.log('🎨 Generando portada temática...');
     console.log('📝 Prompt de portada:', techPrompt);
