@@ -30,10 +30,6 @@ export default async function BlogPage() {
                   {(post.emoji.startsWith("http") || post.emoji.startsWith("/") || post.emoji.startsWith("data:image")) ? (
                     <div style={{ position: 'relative', width: '100%', height: '180px', borderRadius: '10px', overflow: 'hidden', marginBottom: '14px', background: 'var(--bg-secondary)' }}>
                       <img src={post.emoji} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', transform: 'scale(1.08)' }} />
-                      <div style={{ position: 'absolute', top: '10px', left: '10px', background: 'rgba(10, 10, 20, 0.78)', backdropFilter: 'blur(6px)', padding: '4px 10px', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '6px', border: '1px solid rgba(255,255,255,0.15)', boxShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
-                        <img src="/logo.png" alt="Muñeco Tecnology" style={{ height: '20px', width: 'auto', objectFit: 'contain' }} />
-                        <span style={{ color: '#fff', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.5px' }}>MUÑECO</span>
-                      </div>
                     </div>
                   ) : (
                     <div style={{ fontSize: '2.5rem', marginBottom: '12px' }}>{post.emoji}</div>

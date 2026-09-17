@@ -47,10 +47,6 @@ export default function Blog({ initialPosts = [] }: { initialPosts?: Post[] }) {
               {(post.emoji.startsWith("http") || post.emoji.startsWith("/") || post.emoji.startsWith("data:image")) ? (
                 <div style={{ position: "relative", width: "100%", height: "160px", borderRadius: "10px", overflow: "hidden", marginBottom: "4px" }}>
                   <img src={post.emoji} alt={post.title} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top", transform: "scale(1.08)" }} />
-                  <div style={{ position: "absolute", top: "8px", left: "8px", background: "rgba(10, 10, 20, 0.78)", backdropFilter: "blur(6px)", padding: "3px 8px", borderRadius: "6px", display: "flex", alignItems: "center", gap: "5px", border: "1px solid rgba(255,255,255,0.15)", boxShadow: "0 2px 8px rgba(0,0,0,0.4)" }}>
-                    <img src="/logo.png" alt="Muñeco Tecnology" style={{ height: "18px", width: "auto", objectFit: "contain" }} />
-                    <span style={{ color: "#fff", fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.5px" }}>MUÑECO</span>
-                  </div>
                 </div>
               ) : (
                 <div className={styles.emoji}>{post.emoji}</div>
