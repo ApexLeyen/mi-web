@@ -124,7 +124,7 @@ export default function MarkdownRenderer({ content, style }: MarkdownRendererPro
       const altText = imageMatch[1] || "Imagen del artículo";
       const imageUrl = imageMatch[2];
       elements.push(
-        <figure key={`img-${index}`} style={{ margin: "28px 0", textAlign: "center" }}>
+        <figure key={`img-${index}`} style={{ margin: "28px 0", textAlign: "center", overflow: "hidden", borderRadius: "14px" }}>
           <img
             src={imageUrl}
             alt={altText}
@@ -133,7 +133,9 @@ export default function MarkdownRenderer({ content, style }: MarkdownRendererPro
               maxHeight: "520px",
               width: "auto",
               height: "auto",
-              objectFit: "contain",
+              objectFit: imageUrl.includes("pollinations.ai") ? "cover" : "contain",
+              objectPosition: "center top",
+              transform: imageUrl.includes("pollinations.ai") ? "scale(1.08)" : "none",
               borderRadius: "14px",
               boxShadow: "0 8px 30px rgba(0,0,0,0.18)",
               border: "1px solid var(--border-color)",
@@ -175,7 +177,7 @@ export default function MarkdownRenderer({ content, style }: MarkdownRendererPro
         const alt = match[1] || "Imagen";
         const url = match[2];
         parts.push(
-          <div key={`inline-img-${index}-${match.index}`} style={{ margin: "24px 0", textAlign: "center" }}>
+          <div key={`inline-img-${index}-${match.index}`} style={{ margin: "24px 0", textAlign: "center", overflow: "hidden", borderRadius: "14px" }}>
             <img
               src={url}
               alt={alt}
@@ -183,7 +185,9 @@ export default function MarkdownRenderer({ content, style }: MarkdownRendererPro
                 maxWidth: "100%",
                 maxHeight: "520px",
                 borderRadius: "14px",
-                objectFit: "contain",
+                objectFit: url.includes("pollinations.ai") ? "cover" : "contain",
+                objectPosition: "center top",
+                transform: url.includes("pollinations.ai") ? "scale(1.08)" : "none",
                 boxShadow: "0 8px 30px rgba(0,0,0,0.18)",
                 border: "1px solid var(--border-color)",
               }}
