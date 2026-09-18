@@ -17,6 +17,9 @@ jobs:
         with:
           node-version: '20'
 
+      - name: 📦 Instalar dependencias auxiliares
+        run: npm install sharp --no-save
+
       - name: 📝 Generar y publicar artículo con Gemini AI
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}

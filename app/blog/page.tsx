@@ -29,7 +29,7 @@ export default async function BlogPage() {
                 <article className="glass" style={{ padding: '24px', borderRadius: '16px', cursor: 'pointer', transition: 'transform 0.2s', height: '100%', display: 'flex', flexDirection: 'column' }}>
                   {(post.emoji.startsWith("http") || post.emoji.startsWith("/") || post.emoji.startsWith("data:image")) ? (
                     <div style={{ position: 'relative', width: '100%', height: '180px', borderRadius: '10px', overflow: 'hidden', marginBottom: '14px', background: 'var(--bg-secondary)' }}>
-                      <img src={post.emoji} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', transform: 'scale(1.08)' }} />
+                      <img src={post.emoji} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
                   ) : (
                     <div style={{ fontSize: '2.5rem', marginBottom: '12px' }}>{post.emoji}</div>

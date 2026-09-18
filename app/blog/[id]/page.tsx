@@ -124,7 +124,7 @@ export default function BlogPostPage() {
           <header style={{ marginBottom: '40px' }}>
             {(post.emoji.startsWith("http") || post.emoji.startsWith("/") || post.emoji.startsWith("data:image")) ? (
               <div style={{ position: 'relative', width: '100%', maxHeight: '420px', borderRadius: '16px', overflow: 'hidden', marginBottom: '24px', background: 'var(--bg-secondary)', display: 'flex', justifyContent: 'center' }}>
-                <img src={post.emoji} alt={post.title} style={{ width: '100%', maxHeight: '420px', objectFit: 'cover', objectPosition: 'center top', transform: 'scale(1.08)' }} />
+                <img src={post.emoji} alt={post.title} style={{ width: '100%', maxHeight: '420px', objectFit: 'cover' }} />
               </div>
             ) : (
               <div style={{ fontSize: '4rem', marginBottom: '20px' }}>{post.emoji}</div>

@@ -36,7 +36,7 @@ Usa exactamente esta estructura:
   "content": "contenido completo en Markdown con subtítulos ##, párrafos y la imagen integrada",
   "tag": "una de estas exactamente: Android, Tutorial, Tecnología, Programación, Web",
   "readTime": "X min de lectura",
-  "imagePrompt": "A detailed English visual prompt in 3D for the cover illustration depicting the specific topic of this article (e.g. database, smartphone, cyber security, code servers), glowing neon cyan and blue lighting, cyberpunk aesthetic, 3d render, octane engine"
+  "imagePrompt": "A vivid 3D digital illustration prompt in English focusing on the core subject of this article. Describe concrete objects: if Node.js/Backend, describe glowing 3D server racks with floating holographic JSON data cards and glowing green/cyan fiber optic cables; if Android, describe a futuristic 3D smartphone with floating glowing holographic app cards; if Database, describe glowing cylindrical data servers with streams of binary data; if Security, describe a futuristic digital cyber shield with glowing circuits. The scene must be full of 3D objects, vibrant neon cyan and deep blue cinematic lighting, cyberpunk aesthetic, 8k render, octane engine, highly detailed, no text, no letters, no words"
 }`;
 
 const geminiBody = JSON.stringify({
@@ -124,12 +124,12 @@ async function callGemini(attempt = 1) {
     console.log('✅ Contenido generado con éxito:', blogData.title);
 
     // Generar ilustración de portada temática detallada y vibrante
-    const topicSubject = blogData.imagePrompt || (blogData.title + ' technology concept');
-    const techPrompt = topicSubject + ', vibrant futuristic 3d digital illustration, rich glowing neon cyan and electric blue lighting, holographic tech elements, cyberpunk aesthetic, high contrast, detailed dynamic composition, octane render 8k, completely clean, no text, no letters, no words, no watermark, pure digital art';
+    const topicSubject = blogData.imagePrompt || (blogData.title + ' 3d futuristic technology concept');
+    const techPrompt = topicSubject + ', vibrant 3d digital illustration, glowing neon cyan and electric blue cinematic lighting, cyberpunk tech aesthetic, high contrast, detailed dynamic composition, octane render 8k, completely clean, no text, no letters, no words, no watermark, pure digital art';
 
-    console.log('🎨 Generando portada temática...');
+    console.log('🎨 Generando portada temática con Flux...');
     console.log('📝 Prompt de portada:', techPrompt);
-    const imgUrl = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(techPrompt) + '?width=800&height=450&nologo=true';
+    const imgUrl = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(techPrompt) + '?model=flux&width=800&height=450';
 
     let coverImage = '🤖';
     try {
@@ -138,8 +138,26 @@ async function callGemini(attempt = 1) {
       if (imgRes.ok) {
         const arrayBuffer = await imgRes.arrayBuffer();
         const buf = Buffer.from(arrayBuffer);
-        coverImage = 'data:image/jpeg;base64,' + buf.toString('base64');
-        console.log('🖼️ Ilustración descargada con éxito (' + (buf.length / 1024).toFixed(1) + ' KB)');
+        if (buf.length > 5000) {
+          let finalBuf = buf;
+          try {
+            const sharp = require('sharp');
+            const meta = await sharp(buf).metadata();
+            if (meta.height && meta.width && meta.height > 60) {
+              finalBuf = await sharp(buf)
+                .extract({ left: 0, top: 0, width: meta.width, height: meta.height - 42 })
+                .jpeg({ quality: 88 })
+                .toBuffer();
+              console.log('✂️ Marca de agua recortada con éxito!');
+            }
+          } catch (sharpErr) {
+            console.warn('⚠️ Sharp no disponible, usando imagen completa:', sharpErr.message);
+          }
+          coverImage = 'data:image/jpeg;base64,' + finalBuf.toString('base64');
+          console.log('🖼️ Ilustración descargada con éxito (' + (finalBuf.length / 1024).toFixed(1) + ' KB)');
+        } else {
+          console.warn('⚠️ La respuesta no es una imagen válida (' + buf.length + ' bytes), usando emoji');
+        }
       } else {
         console.warn('⚠️ No se pudo generar la imagen (status ' + imgRes.status + '), usando emoji');
       }
