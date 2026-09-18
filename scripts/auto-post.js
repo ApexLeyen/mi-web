@@ -25,18 +25,16 @@ console.log('📌 Tema seleccionado para hoy:', topic);
 const prompt = `Eres un redactor y diseñador técnico para el blog de Muñeco Tecnology.
 Escribe un artículo de blog completo en español sobre el tema: "${topic}".
 El artículo debe ser útil, educativo, profesional y tener entre 500 y 700 palabras.
-Dentro del contenido en Markdown, incluye subtítulos ##, explicaciones claras y añade exactamente 1 imagen explicativa relevante en medio del texto usando la sintaxis:
-![Ilustración conceptual](https://image.pollinations.ai/prompt/<PROMPT_EN_INGLES_CORTO_DEL_TEMA_SEPARADO_CON_GUIONES-dark-neon-blue-no-text-no-watermark>?width=700&height=380&nologo=true)
-donde la URL esté limpia y en minúsculas.
+Dentro del contenido en Markdown, incluye subtítulos ##, explicaciones claras, ejemplos prácticos o de código y listas. NO incluyas ninguna imagen dentro del texto (no uses la sintaxis ![alt](url)), debe ser contenido 100% texto en Markdown.
 Responde ÚNICAMENTE con un objeto JSON válido, sin bloques markdown.
 Usa exactamente esta estructura:
 {
   "title": "título atractivo y profesional",
   "excerpt": "resumen breve de 1 a 2 oraciones para la tarjeta del blog",
-  "content": "contenido completo en Markdown con subtítulos ##, párrafos y la imagen integrada",
+  "content": "contenido completo en Markdown con subtítulos ##, párrafos y explicaciones, sin imágenes",
   "tag": "una de estas exactamente: Android, Tutorial, Tecnología, Programación, Web",
   "readTime": "X min de lectura",
-  "imagePrompt": "A vivid 3D digital illustration prompt in English focusing on the core subject of this article. Describe concrete objects: if Node.js/Backend, describe glowing 3D server racks with floating holographic JSON data cards and glowing green/cyan fiber optic cables; if Android, describe a futuristic 3D smartphone with floating glowing holographic app cards; if Database, describe glowing cylindrical data servers with streams of binary data; if Security, describe a futuristic digital cyber shield with glowing circuits. The scene must be full of 3D objects, vibrant neon cyan and deep blue cinematic lighting, cyberpunk aesthetic, 8k render, octane engine, highly detailed, no text, no letters, no words"
+  "imagePrompt": "A concrete English visual prompt for a high-tech 3D illustration centered directly on this article's specific topic. Must describe clear, physical, tangible objects in a cyberpunk setting: if Web/Backend/API/Node.js/TypeScript, describe a futuristic high-tech computer workstation desk with curved glowing holographic monitors displaying code and API architecture diagrams, neon cyan and green lighting; if Android/Mobile, describe a futuristic sleek smartphone hovering in center with glowing 3D holographic app cards and icons, neon cyan and violet lighting; if AI, describe a glowing 3D cybernetic neural network brain core with data streams; if Security/Cloud, describe a glowing 3D futuristic holographic security shield vault protecting server hardware; if Git/Clean Code, describe a futuristic glowing glass laptop with holographic code structures. The scene must be full of detailed 3D objects, vibrant neon lighting, high contrast, 8k octane render, cinematic composition, completely clean, no text, no letters, no words"
 }`;
 
 const geminiBody = JSON.stringify({
