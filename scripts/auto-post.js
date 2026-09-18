@@ -46,7 +46,7 @@ const geminiBody = JSON.stringify({
   },
 });
 
-const geminiModels = ['gemini-3.6-flash', 'gemini-3.7-flash', 'gemini-3.8-flash', 'gemini-2.5-flash'];
+const geminiModels = ['gemini-3.6-flash', 'gemini-3.7-flash', 'gemini-3.8-flash'];
 
 async function callGemini(attempt = 1, modelIndex = 0) {
   const currentModel = geminiModels[modelIndex % geminiModels.length];
