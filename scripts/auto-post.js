@@ -46,12 +46,15 @@ const geminiBody = JSON.stringify({
   },
 });
 
-async function callGemini(attempt = 1) {
+const geminiModels = ['gemini-3.6-flash', 'gemini-3.7-flash', 'gemini-3.8-flash', 'gemini-2.5-flash'];
+
+async function callGemini(attempt = 1, modelIndex = 0) {
+  const currentModel = geminiModels[modelIndex % geminiModels.length];
   return new Promise((resolve, reject) => {
     const req = https.request(
       {
         hostname: 'generativelanguage.googleapis.com',
-        path: '/v1beta/models/gemini-3.6-flash:generateContent?key=' + process.env.GEMINI_API_KEY,
+        path: `/v1beta/models/${currentModel}:generateContent?key=` + process.env.GEMINI_API_KEY,
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -65,10 +68,18 @@ async function callGemini(attempt = 1) {
           try {
             const json = JSON.parse(data);
             if (json.error) {
-              if ((json.error.code === 503 || json.error.code === 429) && attempt < 4) {
-                console.warn(`⚠️ Servidores de Google con alta demanda (${json.error.code}). Reintentando en 8s (intento ${attempt}/3)...`);
-                await new Promise((r) => setTimeout(r, 8000));
-                return resolve(await callGemini(attempt + 1));
+              // Si el modelo está saturado (503) o con límite de peticiones (429)
+              if ((json.error.code === 503 || json.error.code === 429) && attempt < 6) {
+                const waitTime = Math.min(10000 + attempt * 5000, 30000);
+                const nextModelIndex = (modelIndex + 1) % geminiModels.length;
+                console.warn(`⚠️ Alta demanda en ${currentModel} (${json.error.code}). Probando con ${geminiModels[nextModelIndex]} en ${waitTime / 1000}s (intento ${attempt}/5)...`);
+                await new Promise((r) => setTimeout(r, waitTime));
+                return resolve(await callGemini(attempt + 1, nextModelIndex));
+              }
+              // Si el modelo da 404 (no disponible para esta clave), probar el siguiente inmediatamente
+              if (json.error.code === 404 && modelIndex < geminiModels.length - 1) {
+                console.warn(`⚠️ Modelo ${currentModel} no habilitado (404). Cambiando a ${geminiModels[modelIndex + 1]}...`);
+                return resolve(await callGemini(attempt, modelIndex + 1));
               }
               console.error('❌ Error devuelto por Gemini API:', JSON.stringify(json.error, null, 2));
               process.exit(1);
@@ -77,6 +88,7 @@ async function callGemini(attempt = 1) {
               console.error('❌ Error: Gemini no devolvió candidatos. Respuesta:', data);
               process.exit(1);
             }
+            console.log(`✨ Respuesta obtenida exitosamente usando modelo ${currentModel}!`);
             resolve(json);
           } catch (e) {
             reject(e);
