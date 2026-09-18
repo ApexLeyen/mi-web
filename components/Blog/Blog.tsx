@@ -45,8 +45,13 @@ export default function Blog({ initialPosts = [] }: { initialPosts?: Post[] }) {
               whileHover={{ y: -8, transition: { duration: 0.2 } }}
             >
               {(post.emoji.startsWith("http") || post.emoji.startsWith("/") || post.emoji.startsWith("data:image")) ? (
-                <div style={{ position: "relative", width: "100%", height: "160px", borderRadius: "10px", overflow: "hidden", marginBottom: "4px" }}>
-                  <img src={post.emoji} alt={post.title} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top", transform: "scale(1.08)" }} />
+                <div style={{ position: "relative", width: "100%", height: "170px", borderRadius: "10px", overflow: "hidden", marginBottom: "8px", background: "#050b14" }}>
+                  <img src={post.emoji} alt={post.title} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", transform: "scale(1.08)" }} />
+                  <div style={{ position: "absolute", top: "10px", left: "10px", background: "#ffffff", padding: "4px 10px", borderRadius: "50px", display: "inline-flex", alignItems: "center", gap: "6px", boxShadow: "0 2px 10px rgba(0,0,0,0.5)", zIndex: 2 }}>
+                    <img src="/logo.png" alt="Muñeco Tecnology" style={{ height: "16px", width: "auto" }} />
+                    <span style={{ color: "#000000", fontSize: "0.68rem", fontWeight: 900, letterSpacing: "0.4px" }}>MUÑECO TECNOLOGY</span>
+                  </div>
+                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(10,10,20,0.65) 0%, transparent 55%)", pointerEvents: "none" }} />
                 </div>
               ) : (
                 <div className={styles.emoji}>{post.emoji}</div>

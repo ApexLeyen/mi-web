@@ -130,9 +130,9 @@ async function callGemini(attempt = 1) {
       delete blogData.bullets;
     }
 
-    // Generar ilustración de portada temática con la estructura y texto especificados
+    // Generar ilustración de portada temática detallada y vibrante
     const topicSubject = blogData.imagePrompt || (blogData.title + ' technology concept');
-    const techPrompt = topicSubject + ', dark high tech background, glowing vibrant neon cyan and electric blue lighting, completely clean, no text, no letters, no words, no watermark, pure digital art';
+    const techPrompt = topicSubject + ', vibrant futuristic 3d digital illustration, rich glowing neon cyan and electric blue lighting, holographic tech elements, cyberpunk aesthetic, high contrast, detailed dynamic composition, octane render 8k, completely clean, no text, no letters, no words, no watermark, pure digital art';
 
     console.log('🎨 Generando portada temática...');
     console.log('📝 Prompt de portada:', techPrompt);
