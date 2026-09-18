@@ -36,8 +36,7 @@ Usa exactamente esta estructura:
   "content": "contenido completo en Markdown con subtítulos ##, párrafos y la imagen integrada",
   "tag": "una de estas exactamente: Android, Tutorial, Tecnología, Programación, Web",
   "readTime": "X min de lectura",
-  "imagePrompt": "Un prompt en inglés para generar SOLO EL FONDO de la imagen, sin texto. Ejemplo: 'Dark high tech neon city background with a glowing cyber shield in the center, electric blue lighting, clean 3d render, octane engine, completely clean, no text, no words, no watermark'",
-  "bullets": ["Icono 1 - Descripción corta", "Icono 2 - Descripción corta", "Icono 3 - Descripción corta", "Icono 4 - Descripción corta", "Icono 5 - Descripción corta", "Icono 6 - Descripción corta", "Icono 7 - Descripción corta"]
+  "imagePrompt": "A detailed English visual prompt in 3D for the cover illustration depicting the specific topic of this article (e.g. database, smartphone, cyber security, code servers), glowing neon cyan and blue lighting, cyberpunk aesthetic, 3d render, octane engine"
 }`;
 
 const geminiBody = JSON.stringify({
@@ -123,12 +122,6 @@ async function callGemini(attempt = 1) {
     }
     
     console.log('✅ Contenido generado con éxito:', blogData.title);
-
-    // Guardar las viñetas generadas como comentario HTML dentro del contenido
-    if (blogData.bullets && Array.isArray(blogData.bullets)) {
-      blogData.content = `<!-- BULLETS: ${JSON.stringify(blogData.bullets)} -->\n\n` + blogData.content;
-      delete blogData.bullets;
-    }
 
     // Generar ilustración de portada temática detallada y vibrante
     const topicSubject = blogData.imagePrompt || (blogData.title + ' technology concept');
