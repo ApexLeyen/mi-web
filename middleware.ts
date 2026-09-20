@@ -1,19 +1,10 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const OLD_HOST = 'my-web.apexleyen2515.workers.dev';
-const NEW_BASE = 'https://munecotecnology.uk';
-
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const host = request.headers.get('host') || '';
 
-  // 301 redirect: old workers.dev domain → new custom domain (fix para SEO/canonical)
-  if (host === OLD_HOST) {
-    return NextResponse.redirect(`${NEW_BASE}${pathname}`, { status: 301 });
-  }
-
-  // Skip Next.js internal assets (/_next/*) to avoid redirect loops
+  // Skip Next.js internal assets
   if (pathname.startsWith('/_next/')) {
     return NextResponse.next();
   }
@@ -37,6 +28,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Covers all routes so the old-domain redirect fires everywhere
   matcher: ['/((?!_next/static|_next/image|favicon.ico|logo\\.png|manifest\\.json).*)'],
 };
