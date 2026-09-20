@@ -1,6 +1,6 @@
 const https = require('https');
 
-// Lista de temas para rotar cada día
+// Lista de temas para rotar cada día (uno diferente según el día del año)
 const topics = [
   'consejos para programar mejor en Android con Kotlin',
   'novedades de inteligencia artificial para desarrolladores en 2026',
@@ -19,13 +19,48 @@ const topics = [
   'introducción al desarrollo web con Next.js y React',
 ];
 
-const topic = topics[Math.floor(Math.random() * topics.length)];
+// Usar el día del año para no repetir temas
+const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+const topic = topics[dayOfYear % topics.length];
 console.log('📌 Tema seleccionado para hoy:', topic);
 
-const prompt = `Eres un redactor y diseñador técnico para el blog de Muñeco Tecnology.
+// Mapa de imágenes concretas por categoría de tema (NO dependemos de Gemini para esto)
+function getImagePrompt(topicStr) {
+  const t = topicStr.toLowerCase();
+  if (t.includes('seo') || t.includes('velocidad') || t.includes('carga')) {
+    return 'Cinematic 3D render of a futuristic web performance dashboard floating in dark space, glowing speed gauges in neon cyan, a rocket launching from a browser window, SEO ranking graph rising, dark background, vibrant neon blue and cyan lighting, 8k octane render, no text, no letters';
+  }
+  if (t.includes('next.js') || t.includes('react') || t.includes('web')) {
+    return 'Cinematic 3D render of a futuristic browser window floating in dark space, Next.js logo glowing neon blue, React atom logo orbiting around it, holographic component tree floating, dark background, neon cyan lighting, 8k octane render, no text, no letters';
+  }
+  if (t.includes('typescript') || t.includes('javascript') || t.includes('programar') || t.includes('clean code') || t.includes('git')) {
+    return 'Cinematic 3D render of a sleek futuristic laptop computer floating in dark space, holographic code windows open glowing neon green and cyan, lines of code flowing like waterfalls, keyboard glowing cyan, octane render 8k, no text, no letters';
+  }
+  if (t.includes('api') || t.includes('rest') || t.includes('node.js') || t.includes('backend')) {
+    return 'Cinematic 3D render of glowing interconnected API server nodes with data packets flying between them as light beams, futuristic server rack with neon cyan lights in dark datacenter, holographic JSON icons floating, octane render 8k, no text, no letters';
+  }
+  if (t.includes('android') || t.includes('kotlin') || t.includes('app') || t.includes('móvil') || t.includes('ui') || t.includes('ux') || t.includes('play store')) {
+    return 'Cinematic 3D render of a sleek modern Android smartphone floating in dark space, surrounded by glowing holographic mobile app interface cards in neon cyan and violet, android robot translucent in background, octane render 8k, no text, no letters';
+  }
+  if (t.includes('inteligencia artificial') || t.includes('ia') || t.includes('ai')) {
+    return 'Cinematic 3D render of a glowing cybernetic AI brain made of neural network nodes and glowing synapses in neon blue and purple, data streams flowing into it, futuristic digital background, octane render 8k, no text, no letters';
+  }
+  if (t.includes('seguridad') || t.includes('ciberseguridad')) {
+    return 'Cinematic 3D render of a massive glowing holographic cyber security shield protecting a server, digital padlock in neon cyan, binary data streams bouncing off the shield, dark background with electric blue grid, octane render 8k, no text, no letters';
+  }
+  if (t.includes('base de datos') || t.includes('room') || t.includes('sql') || t.includes('bases de datos')) {
+    return 'Cinematic 3D render of glowing cylindrical database servers with neon cyan data streams flowing between them, holographic schema diagrams floating above, dark background, octane render 8k, no text, no letters';
+  }
+  return 'Cinematic 3D render of a futuristic developer workspace with multiple holographic neon cyan screens showing code, glowing keyboard, dark cyberpunk background, high contrast vibrant lighting, octane render 8k, no text, no letters';
+}
+
+const coverImagePrompt = getImagePrompt(topic);
+console.log('🎨 Prompt de portada:', coverImagePrompt.substring(0, 100) + '...');
+
+const prompt = `Eres un redactor técnico para el blog de Muñeco Tecnology.
 Escribe un artículo de blog completo en español sobre el tema: "${topic}".
 El artículo debe ser útil, educativo, profesional y tener entre 500 y 700 palabras.
-Dentro del contenido en Markdown, incluye subtítulos ##, explicaciones claras, ejemplos prácticos o de código y listas. NO incluyas ninguna imagen dentro del texto (no uses la sintaxis ![alt](url)), debe ser contenido 100% texto en Markdown.
+Incluye subtítulos ##, explicaciones claras, ejemplos prácticos o de código y listas. NO incluyas ninguna imagen en el texto.
 Responde ÚNICAMENTE con un objeto JSON válido, sin bloques markdown.
 Usa exactamente esta estructura:
 {
@@ -33,8 +68,7 @@ Usa exactamente esta estructura:
   "excerpt": "resumen breve de 1 a 2 oraciones para la tarjeta del blog",
   "content": "contenido completo en Markdown con subtítulos ##, párrafos y explicaciones, sin imágenes",
   "tag": "una de estas exactamente: Android, Tutorial, Tecnología, Programación, Web",
-  "readTime": "X min de lectura",
-  "imagePrompt": "A concrete English visual prompt for a high-tech 3D illustration centered directly on this article's specific topic. Must describe clear, physical, tangible objects in a cyberpunk setting: if Web/Backend/API/Node.js/TypeScript, describe a futuristic high-tech computer workstation desk with curved glowing holographic monitors displaying code and API architecture diagrams, neon cyan and green lighting; if Android/Mobile, describe a futuristic sleek smartphone hovering in center with glowing 3D holographic app cards and icons, neon cyan and violet lighting; if AI, describe a glowing 3D cybernetic neural network brain core with data streams; if Security/Cloud, describe a glowing 3D futuristic holographic security shield vault protecting server hardware; if Git/Clean Code, describe a futuristic glowing glass laptop with holographic code structures. The scene must be full of detailed 3D objects, vibrant neon lighting, high contrast, 8k octane render, cinematic composition, completely clean, no text, no letters, no words"
+  "readTime": "X min de lectura"
 }`;
 
 const geminiBody = JSON.stringify({
@@ -68,17 +102,17 @@ async function callGemini(attempt = 1, modelIndex = 0) {
           try {
             const json = JSON.parse(data);
             if (json.error) {
-              // Si el modelo está saturado (503) o con límite de peticiones (429)
-              if ((json.error.code === 503 || json.error.code === 429) && attempt < 6) {
-                const waitTime = Math.min(10000 + attempt * 5000, 30000);
+              // Alta demanda (503/429): esperar mucho y rotar modelo
+              if ((json.error.code === 503 || json.error.code === 429) && attempt < 8) {
+                const waitTime = Math.min(30000 + attempt * 15000, 90000); // hasta 90s
                 const nextModelIndex = (modelIndex + 1) % geminiModels.length;
-                console.warn(`⚠️ Alta demanda en ${currentModel} (${json.error.code}). Probando con ${geminiModels[nextModelIndex]} en ${waitTime / 1000}s (intento ${attempt}/5)...`);
+                console.warn(`⚠️ Alta demanda en ${currentModel} (${json.error.code}). Esperando ${waitTime / 1000}s y cambiando a ${geminiModels[nextModelIndex]} (intento ${attempt}/7)...`);
                 await new Promise((r) => setTimeout(r, waitTime));
                 return resolve(await callGemini(attempt + 1, nextModelIndex));
               }
-              // Si el modelo da 404 (no disponible para esta clave), probar el siguiente inmediatamente
+              // Modelo no disponible (404): saltar inmediatamente al siguiente
               if (json.error.code === 404 && modelIndex < geminiModels.length - 1) {
-                console.warn(`⚠️ Modelo ${currentModel} no habilitado (404). Cambiando a ${geminiModels[modelIndex + 1]}...`);
+                console.warn(`⚠️ Modelo ${currentModel} no disponible (404). Cambiando a ${geminiModels[modelIndex + 1]}...`);
                 return resolve(await callGemini(attempt, modelIndex + 1));
               }
               console.error('❌ Error devuelto por Gemini API:', JSON.stringify(json.error, null, 2));
@@ -88,7 +122,7 @@ async function callGemini(attempt = 1, modelIndex = 0) {
               console.error('❌ Error: Gemini no devolvió candidatos. Respuesta:', data);
               process.exit(1);
             }
-            console.log(`✨ Respuesta obtenida exitosamente usando modelo ${currentModel}!`);
+            console.log(`✨ Respuesta obtenida usando modelo ${currentModel}!`);
             resolve(json);
           } catch (e) {
             reject(e);
@@ -107,7 +141,7 @@ async function callGemini(attempt = 1, modelIndex = 0) {
 
 (async () => {
   try {
-    console.log('🤖 Consultando a Gemini 3.6 Flash...');
+    console.log('🤖 Consultando a Gemini...');
     const geminiRes = await callGemini();
 
     let text = geminiRes.candidates[0].content.parts[0].text.trim();
@@ -130,15 +164,13 @@ async function callGemini(attempt = 1, modelIndex = 0) {
       console.error(text.substring(0, 500) + '...[recortado]...' + text.substring(text.length - 500));
       throw parseError;
     }
-    
+
     console.log('✅ Contenido generado con éxito:', blogData.title);
 
-    // Generar ilustración de portada temática detallada y vibrante
-    const topicSubject = blogData.imagePrompt || (blogData.title + ' 3d futuristic technology concept');
-    const techPrompt = topicSubject + ', vibrant 3d digital illustration, glowing neon cyan and electric blue cinematic lighting, cyberpunk tech aesthetic, high contrast, detailed dynamic composition, octane render 8k, completely clean, no text, no letters, no words, no watermark, pure digital art';
+    // Usar el prompt de imagen predefinido por categoría (más confiable que dejárselo a Gemini)
+    const techPrompt = coverImagePrompt;
 
     console.log('🎨 Generando portada temática con Flux...');
-    console.log('📝 Prompt de portada:', techPrompt);
     const imgUrl = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(techPrompt) + '?model=flux&width=800&height=450';
 
     let coverImage = '🤖';
@@ -161,7 +193,7 @@ async function callGemini(attempt = 1, modelIndex = 0) {
               console.log('✂️ Marca de agua recortada con éxito!');
             }
           } catch (sharpErr) {
-            console.warn('⚠️ Sharp no disponible, usando imagen completa:', sharpErr.message);
+            console.warn('⚠️ Sharp no disponible:', sharpErr.message);
           }
           coverImage = 'data:image/jpeg;base64,' + finalBuf.toString('base64');
           console.log('🖼️ Ilustración descargada con éxito (' + (finalBuf.length / 1024).toFixed(1) + ' KB)');
