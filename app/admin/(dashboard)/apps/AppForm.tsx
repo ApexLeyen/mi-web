@@ -3,8 +3,23 @@
 import { useState, useRef } from "react";
 import { HardDrive, Cpu, Download, Info, Image as ImageIcon, Sparkles, Upload } from "lucide-react";
 
+export interface AppFormData {
+  id: string;
+  name: string;
+  icon: string;
+  description: string;
+  category: string;
+  version: string;
+  size: string;
+  minRequirements: string;
+  changelog: string;
+  downloadUrl: string;
+  status: string;
+}
+
 interface AppFormProps {
   createAction: (formData: FormData) => Promise<void>;
+  initialData?: AppFormData;
 }
 
 const statusOptions = [
@@ -13,17 +28,18 @@ const statusOptions = [
   { value: "soon", label: "Próximamente", color: "var(--status-soon, #6b7280)" },
 ];
 
-export default function AppForm({ createAction }: AppFormProps) {
-  const [name, setName] = useState("");
-  const [icon, setIcon] = useState("🚀");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("Herramientas");
-  const [version, setVersion] = useState("1.0.0");
-  const [size, setSize] = useState("15.4 MB");
-  const [minRequirements, setMinRequirements] = useState("Android 8.0+");
-  const [changelog, setChangelog] = useState("- Versión inicial de lanzamiento\n- Optimización de rendimiento");
-  const [downloadUrl, setDownloadUrl] = useState("");
-  const [status, setStatus] = useState("available");
+export default function AppForm({ createAction, initialData }: AppFormProps) {
+  const isEdit = !!initialData;
+  const [name, setName] = useState(initialData?.name ?? "");
+  const [icon, setIcon] = useState(initialData?.icon ?? "🚀");
+  const [description, setDescription] = useState(initialData?.description ?? "");
+  const [category, setCategory] = useState(initialData?.category ?? "Herramientas");
+  const [version, setVersion] = useState(initialData?.version ?? "1.0.0");
+  const [size, setSize] = useState(initialData?.size ?? "15.4 MB");
+  const [minRequirements, setMinRequirements] = useState(initialData?.minRequirements ?? "Android 8.0+");
+  const [changelog, setChangelog] = useState(initialData?.changelog ?? "- Versión inicial de lanzamiento\n- Optimización de rendimiento");
+  const [downloadUrl, setDownloadUrl] = useState(initialData?.downloadUrl ?? "");
+  const [status, setStatus] = useState(initialData?.status ?? "available");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadingIcon, setUploadingIcon] = useState(false);
 
@@ -99,10 +115,12 @@ export default function AppForm({ createAction }: AppFormProps) {
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <h3 style={{ margin: 0, fontSize: "1.2rem", display: "flex", alignItems: "center", gap: "8px" }}>
-            <Sparkles size={18} color="var(--accent-primary)" /> Añadir Nueva App / APK
+            <Sparkles size={18} color="var(--accent-primary)" /> {isEdit ? "Editar App / APK" : "Añadir Nueva App / APK"}
           </h3>
           <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>Todos los campos son editables</span>
         </div>
+
+        {isEdit && <input type="hidden" name="id" value={initialData!.id} />}
 
         {/* Nombre & Categoría */}
         <div className="admin-form-row-2">
@@ -307,7 +325,9 @@ export default function AppForm({ createAction }: AppFormProps) {
           disabled={isSubmitting}
           style={{ padding: "14px", fontSize: "1rem", marginTop: "6px", width: "100%", justifyContent: "center" }}
         >
-          {isSubmitting ? "Publicando aplicación..." : "🚀 Publicar Aplicación"}
+          {isSubmitting
+            ? (isEdit ? "Guardando cambios..." : "Publicando aplicación...")
+            : (isEdit ? "💾 Guardar Cambios" : "🚀 Publicar Aplicación")}
         </button>
       </form>
 

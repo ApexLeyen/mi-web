@@ -1,17 +1,18 @@
 import { revalidatePath } from 'next/cache';
+import { notFound, redirect } from 'next/navigation';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 import prisma from '@/lib/prisma';
 import AppForm from '../AppForm';
-import { notFound } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
 // Server action to update an existing app
 async function updateApp(formData: FormData) {
-  "use server";
+  'use server';
   const id = formData.get('id') as string;
-  if (!id) {
-    throw new Error('Missing app id');
-  }
+  if (!id) throw new Error('Missing app id');
+
   await prisma.app.update({
     where: { id },
     data: {
@@ -27,57 +28,43 @@ async function updateApp(formData: FormData) {
       status: formData.get('status') as string,
     },
   });
-  // Re‑validate the relevant paths so the UI updates immediately
+
   revalidatePath('/admin/apps');
   revalidatePath('/');
+  redirect('/admin/apps');
 }
 
-export default async function EditApp({ params }: { params: { id: string } }) {
-  const app = await prisma.app.findUnique({ where: { id: params.id } });
-  if (!app) {
-    notFound();
-  }
-  // Convert the Prisma record into a FormData‑compatible shape for AppForm.
-  // AppForm expects its fields via the native form submission, so we pass the app as defaults.
-  const defaultValues = {
-    name: app.name,
-    icon: app.icon,
-    description: app.description,
-    category: app.category,
-    version: app.version,
-    size: app.size,
-    minRequirements: app.minRequirements,
-    changelog: app.changelog,
-    downloadUrl: app.downloadUrl,
-    status: app.status,
-  };
+export default async function EditApp({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const app = await prisma.app.findUnique({ where: { id } });
+  if (!app) notFound();
 
-  // Render the same AppForm but with hidden input for the id and pre‑filled values.
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '24px' }}>
-      <h2 style={{ fontSize: '1.5rem', marginBottom: '16px' }}>✏️ Editar Aplicación</h2>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <div>
+        <Link
+          href="/admin/apps"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', color: 'var(--text-muted)', textDecoration: 'none', marginBottom: '10px' }}
+        >
+          <ArrowLeft size={14} /> Volver a Aplicaciones
+        </Link>
+        <h2 style={{ margin: 0, fontSize: '1.6rem' }}>✏️ Editar: {app.name}</h2>
+      </div>
+
       <AppForm
         createAction={updateApp}
-        // Pass the existing values as default props – AppForm reads from the form itself, so we’ll embed hidden inputs.
-        // We extend AppForm with an extra hidden field for the id.
-        // To keep the component reusable we’ll render the hidden field here.
-      />
-      {/* Hidden field with the app id – placed outside AppForm because the component does not render it. */}
-      <form style={{ display: 'none' }} action={updateApp}>
-        <input type="hidden" name="id" value={app.id} />
-      </form>
-      {/* Initialise the form fields via JS – simple way without refactoring AppForm. */}
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            const form = document.querySelector('form[action="${updateApp.name}"]');
-            if (form) {
-              Object.entries(${JSON.stringify(defaultValues)}).forEach(([key, value]) => {
-                const input = form.querySelector(`[name="${key}"]`);
-                if (input) input.value = value;
-              });
-            }
-          `,
+        initialData={{
+          id: app.id,
+          name: app.name ?? '',
+          icon: app.icon ?? '',
+          description: app.description ?? '',
+          category: app.category ?? '',
+          version: app.version ?? '',
+          size: app.size ?? '',
+          minRequirements: app.minRequirements ?? '',
+          changelog: app.changelog ?? '',
+          downloadUrl: app.downloadUrl ?? '',
+          status: app.status ?? 'available',
         }}
       />
     </div>

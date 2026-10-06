@@ -1,6 +1,6 @@
 import { revalidatePath } from 'next/cache';
 import prisma from '@/lib/prisma';
-import AppForm from '../AppForm';
+import AppForm from './AppForm';
 import { Trash2, ExternalLink, HardDrive, Cpu, Smartphone, Edit } from 'lucide-react';
 import Link from 'next/link';
 
