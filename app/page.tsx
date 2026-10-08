@@ -3,6 +3,7 @@ import About from "@/components/About/About";
 import AppsStore from "@/components/AppsStore/AppsStore";
 import Portfolio from "@/components/Portfolio/Portfolio";
 import Blog from "@/components/Blog/Blog";
+import Contact from "@/components/Contact/Contact";
 import prisma from "@/lib/prisma";
 
 export const dynamic = 'force-dynamic';
@@ -52,6 +53,7 @@ export default async function Home() {
       <AppsStore initialApps={apps} />
       <Portfolio initialProjects={projects} />
       <Blog initialPosts={posts} />
+      <Contact />
     </>
   );
 }
