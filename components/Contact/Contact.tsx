@@ -20,7 +20,7 @@ export default function Contact() {
     };
 
     try {
-      const response = await fetch("https://formsubmit.co/ajax/soporte.app.afi@gmail.com", {
+      const response = await fetch("https://formsubmit.co/ajax/munecotecnology@gmail.com", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

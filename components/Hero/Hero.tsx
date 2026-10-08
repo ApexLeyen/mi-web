@@ -60,7 +60,7 @@ export default function Hero() {
                 <Download size={18} />
                 Descargar Apps
               </a>
-              <a href="mailto:soporte.app.afi@gmail.com" className="btn btn-outline" id="hero-contratar">
+              <a href="mailto:munecotecnology@gmail.com" className="btn btn-outline" id="hero-contratar">
                 <Briefcase size={18} />
                 Contratar servicios
               </a>

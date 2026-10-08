@@ -79,7 +79,7 @@ export default function Footer() {
                 <XIcon size={14} />
               </a>
               <a
-                href="mailto:soporte.app.afi@gmail.com"
+                href="mailto:munecotecnology@gmail.com"
                 className={styles.socialBtn}
                 aria-label="Email"
                 title="Enviar Correo"
@@ -112,11 +112,11 @@ export default function Footer() {
           {/* Contact & Share */}
           <div className={styles.col}>
             <h4 className={styles.colTitle}>Contacto y Servicios</h4>
-            <a href="mailto:soporte.app.afi@gmail.com" className={styles.footerLink} id="footer-email">
-              soporte.app.afi@gmail.com
+            <a href="mailto:munecotecnology@gmail.com" className={styles.footerLink} id="footer-email">
+              munecotecnology@gmail.com
             </a>
             <a
-              href="mailto:soporte.app.afi@gmail.com?subject=Consulta%20de%20Servicios%20-%20Muñeco%20Tecnology"
+              href="mailto:munecotecnology@gmail.com?subject=Consulta%20de%20Servicios%20-%20Muñeco%20Tecnology"
               className={`btn btn-primary ${styles.contactBtn}`}
               id="footer-contact-btn"
             >
