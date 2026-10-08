@@ -7,17 +7,45 @@ import styles from "./Contact.module.css";
 export default function Contact() {
   const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setStatus("submitting");
 
-    // Aquí iría la lógica para enviar el correo (ej. Formspree, Resend o un API route propio).
-    // Por ahora simulamos un envío:
-    setTimeout(() => {
-      setStatus("success");
-      (e.target as HTMLFormElement).reset();
-      setTimeout(() => setStatus("idle"), 5000);
-    }, 1500);
+    const form = e.target as HTMLFormElement;
+    const formData = new FormData(form);
+    const data = {
+      name: formData.get("name"),
+      email: formData.get("email"),
+      message: formData.get("project")
+    };
+
+    try {
+      const response = await fetch("https://formsubmit.co/ajax/soporte.app.afi@gmail.com", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          Nombre: data.name,
+          Email: data.email,
+          Proyecto: data.message,
+          _subject: "Nuevo cliente desde Muñeco Tecnology 🚀"
+        }),
+      });
+
+      if (response.ok) {
+        setStatus("success");
+        form.reset();
+        setTimeout(() => setStatus("idle"), 5000);
+      } else {
+        setStatus("idle");
+        alert("Hubo un error al enviar el mensaje. Por favor, intenta de nuevo.");
+      }
+    } catch (error) {
+      setStatus("idle");
+      alert("Error de conexión. Revisa tu internet e intenta de nuevo.");
+    }
   };
 
   return (
@@ -61,18 +89,19 @@ export default function Contact() {
           <form className={styles.form} onSubmit={handleSubmit}>
             <div className={styles.formGroup}>
               <label htmlFor="name">Nombre o Empresa</label>
-              <input type="text" id="name" required placeholder="Ej. Juan Pérez" />
+              <input type="text" id="name" name="name" required placeholder="Ej. Juan Pérez" />
             </div>
 
             <div className={styles.formGroup}>
               <label htmlFor="email">Correo Electrónico</label>
-              <input type="email" id="email" required placeholder="tu@correo.com" />
+              <input type="email" id="email" name="email" required placeholder="tu@correo.com" />
             </div>
 
             <div className={styles.formGroup}>
               <label htmlFor="project">Detalles del Proyecto</label>
               <textarea 
                 id="project" 
+                name="project"
                 required 
                 placeholder="Describe qué tipo de app o software necesitas..."
                 rows={4}
