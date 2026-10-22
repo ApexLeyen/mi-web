@@ -23,17 +23,30 @@ export default function PrivacyPolicy() {
             La información recopilada se utiliza exclusivamente para mantener la interacción en el sitio web (como comentarios y likes) y para responder a las consultas enviadas a través de nuestro correo de soporte.
           </p>
 
-          <h2 style={{ marginTop: '30px' }}>3. Cookies y tecnologías similares</h2>
+          <h2 style={{ marginTop: '30px' }}>3. Cookies y Publicidad de Terceros (Google AdSense)</h2>
           <p style={{ color: 'var(--text-secondary)' }}>
-            Utilizamos cookies técnicas y estrictamente necesarias para el correcto funcionamiento del panel de administración y para mantener tu sesión segura. No utilizamos cookies de rastreo de terceros.
+            Utilizamos cookies técnicas para el funcionamiento del sitio y servicios de terceros como <strong>Google AdSense</strong> para mostrar anuncios cuando visitas nuestro sitio web.
+          </p>
+          <p style={{ color: 'var(--text-secondary)', marginTop: '12px' }}>
+            Los proveedores terceros, incluido Google, utilizan cookies (como la cookie de DoubleClick / DART) para mostrar anuncios relevantes basados en las visitas anteriores de un usuario a este sitio web o a otros sitios en Internet. El uso de cookies publicitarias permite a Google y a sus socios mostrar anuncios basados en tus intereses.
+          </p>
+          <p style={{ color: 'var(--text-secondary)', marginTop: '12px' }}>
+            Los usuarios pueden inhabilitar el uso de la publicidad personalizada en cualquier momento accediendo a la{' '}
+            <a href="https://myadcenter.google.com/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-primary)' }}>
+              Configuración de Anuncios de Google
+            </a>{' '}
+            o visitando{' '}
+            <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-primary)' }}>
+              www.aboutads.info
+            </a>.
           </p>
 
           <h2 style={{ marginTop: '30px' }}>4. Contacto</h2>
           <p style={{ color: 'var(--text-secondary)' }}>
             Si tienes alguna duda sobre nuestra política de privacidad, puedes contactarnos en:
             <br />
-            <a href="mailto:soporte.app.afi@gmail.com" style={{ color: 'var(--accent-primary)', textDecoration: 'none', fontWeight: 'bold' }}>
-              soporte.app.afi@gmail.com
+            <a href="mailto:munecotecnology@gmail.com" style={{ color: 'var(--accent-primary)', textDecoration: 'none', fontWeight: 'bold' }}>
+              munecotecnology@gmail.com
             </a>
           </p>
         </div>
