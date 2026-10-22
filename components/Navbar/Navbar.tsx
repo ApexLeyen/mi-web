@@ -8,11 +8,11 @@ import { useTheme } from "@/components/ThemeProvider/ThemeProvider";
 import styles from "./Navbar.module.css";
 
 const navLinks = [
-  { href: "#about", label: "Sobre Mí" },
-  { href: "#apps", label: "Mis Apps" },
-  { href: "#portfolio", label: "Portafolio" },
-  { href: "#blog", label: "Blog" },
-  { href: "#contact", label: "Contacto" },
+  { href: "/#about", label: "Sobre Mí" },
+  { href: "/#apps", label: "Mis Apps" },
+  { href: "/#portfolio", label: "Portafolio" },
+  { href: "/#blog", label: "Blog" },
+  { href: "/#contact", label: "Contacto" },
 ];
 
 export default function Navbar() {
@@ -95,11 +95,11 @@ export default function Navbar() {
               </AnimatePresence>
             </button>
 
-            <a href="#apps" className={`btn btn-primary ${styles.ctaBtn}`}>
+            <a href="/#apps" className={`btn btn-primary ${styles.ctaBtn}`}>
               Descargar Apps
             </a>
 
-            <Link href="/admin/login" className={`btn btn-secondary ${styles.adminBtn}`}>
+            <Link href="/admin/login" rel="nofollow" className={`btn btn-secondary ${styles.adminBtn}`}>
               Admin
             </Link>
 
@@ -149,10 +149,10 @@ export default function Navbar() {
               transition={{ delay: 0.25 }}
               style={{ padding: "24px 20px", display: "flex", gap: "12px", flexDirection: "column", marginTop: "auto" }}
             >
-              <a href="#apps" className="btn btn-primary" style={{ width: "100%", padding: "14px" }} onClick={() => setMenuOpen(false)}>
+              <a href="/#apps" className="btn btn-primary" style={{ width: "100%", padding: "14px" }} onClick={() => setMenuOpen(false)}>
                 🚀 Descargar Apps
               </a>
-              <Link href="/admin/login" className="btn btn-secondary" style={{ width: "100%", padding: "14px" }} onClick={() => setMenuOpen(false)}>
+              <Link href="/admin/login" rel="nofollow" className="btn btn-secondary" style={{ width: "100%", padding: "14px" }} onClick={() => setMenuOpen(false)}>
                 🔒 Panel Administrador
               </Link>
             </motion.div>
