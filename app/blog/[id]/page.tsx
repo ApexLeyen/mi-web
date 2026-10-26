@@ -1,247 +1,168 @@
-"use client";
+import prisma from "@/lib/prisma";
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import { Metadata } from "next";
+import MarkdownRenderer from "@/components/MarkdownRenderer/MarkdownRenderer";
+import PostInteractions from "@/components/Blog/PostInteractions";
 
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
-import MarkdownRenderer from '@/components/MarkdownRenderer/MarkdownRenderer';
-import ShareButtons from '@/components/ShareButtons/ShareButtons';
-import { Heart, MessageSquare, ArrowLeft } from 'lucide-react';
+export const dynamic = "force-dynamic";
 
-export default function BlogPostPage() {
-  const params = useParams();
-  const router = useRouter();
-  const id = params.id as string;
+interface BlogPostPageProps {
+  params: Promise<{ id: string }>;
+}
 
-  const [post, setPost] = useState<any>(null);
-  const [comments, setComments] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [newComment, setNewComment] = useState({ author: '', content: '' });
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const post = await prisma.post.findUnique({
+    where: { id },
+  });
 
-  useEffect(() => {
-    // Fetch post and comments data
-    const fetchPost = async () => {
-      try {
-        const res = await fetch(`/api/posts/${id}`);
-        if (res.ok) {
-          const data = await res.json();
-          setPost(data);
-        } else {
-          router.push('/blog'); // Redirect if not found
-        }
-      } catch (error) {
-        console.error('Error fetching post:', error);
-      }
+  if (!post) {
+    return {
+      title: "Artículo no encontrado — Muñeco Tecnology",
+      description: "El artículo solicitado no existe o fue eliminado.",
     };
-
-    const fetchComments = async () => {
-      try {
-        const res = await fetch(`/api/posts/${id}/comments`);
-        if (res.ok) {
-          const data = await res.json();
-          setComments(data);
-        }
-      } catch (error) {
-        console.error('Error fetching comments:', error);
-      }
-    };
-
-    if (id) {
-      Promise.all([fetchPost(), fetchComments()]).then(() => setLoading(false));
-    }
-  }, [id, router]);
-
-  const handleLike = async () => {
-    if (!post) return;
-
-    // Check local storage for like count on this device
-    const storageKey = `liked-${id}`;
-    const currentLikesStr = localStorage.getItem(storageKey);
-    const currentLikes = currentLikesStr ? parseInt(currentLikesStr, 10) : 0;
-    
-    if (currentLikes >= 2) {
-      alert('¡Ya diste tus dos "Me Gusta" en este artículo! Gracias por tu apoyo. ❤️');
-      return;
-    }
-    
-    // Increment in local storage
-    localStorage.setItem(storageKey, (currentLikes + 1).toString());
-
-    // Optimistic update
-    setPost({ ...post, likes: post.likes + 1 });
-    try {
-      await fetch(`/api/posts/${id}/like`, { method: 'POST' });
-    } catch (error) {
-      console.error('Error liking post:', error);
-      setPost({ ...post, likes: post.likes - 1 }); // Revert on error
-      // Revert local storage
-      localStorage.setItem(storageKey, currentLikes.toString());
-    }
-  };
-
-  const handleCommentSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newComment.author.trim() || !newComment.content.trim()) return;
-
-    setIsSubmitting(true);
-    try {
-      const res = await fetch(`/api/posts/${id}/comments`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newComment),
-      });
-
-      if (res.ok) {
-        const addedComment = await res.json();
-        setComments([addedComment, ...comments]);
-        setNewComment({ author: '', content: '' });
-      }
-    } catch (error) {
-      console.error('Error submitting comment:', error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div style={{ minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <p>Cargando artículo...</p>
-      </div>
-    );
   }
 
-  if (!post) return null;
+  return {
+    title: `${post.title} — Muñeco Tecnology`,
+    description: post.excerpt || `Lee ${post.title} en el blog de Muñeco Tecnology.`,
+    authors: [{ name: "Muñeco Tecnology" }],
+    category: post.tag || "Tecnología",
+    openGraph: {
+      title: `${post.title} — Muñeco Tecnology`,
+      description: post.excerpt || `Tutorial técnico y guía en Muñeco Tecnology.`,
+      url: `https://munecotecnology.uk/blog/${post.id}`,
+      type: "article",
+      images: post.emoji.startsWith("http") ? [{ url: post.emoji }] : [{ url: "https://munecotecnology.uk/logo.png" }],
+    },
+  };
+}
+
+export default async function BlogPostPage({ params }: BlogPostPageProps) {
+  const { id } = await params;
+
+  const post = await prisma.post.findUnique({
+    where: { id },
+    include: {
+      comments: {
+        orderBy: { createdAt: "desc" },
+      },
+    },
+  });
+
+  if (!post) {
+    notFound();
+  }
+
+  const isCustomImage =
+    post.emoji.startsWith("http") ||
+    post.emoji.startsWith("/") ||
+    post.emoji.startsWith("data:image");
 
   return (
-    <div style={{ paddingTop: '100px', minHeight: '100vh', background: 'var(--bg-primary)' }}>
-      <div className="container" style={{ maxWidth: '800px' }}>
-        <Link href="/blog" style={{ color: 'var(--accent-primary)', textDecoration: 'none', display: 'inline-block', marginBottom: '20px' }}>
+    <div style={{ paddingTop: "100px", minHeight: "100vh", background: "var(--bg-primary)" }}>
+      <div className="container" style={{ maxWidth: "840px" }}>
+        <Link
+          href="/blog"
+          style={{
+            color: "var(--accent-primary)",
+            textDecoration: "none",
+            display: "inline-block",
+            marginBottom: "24px",
+            fontWeight: 500,
+          }}
+        >
           ← Volver al blog
         </Link>
-        
+
         <article>
-          <header style={{ marginBottom: '40px' }}>
-            {(post.emoji.startsWith("http") || post.emoji.startsWith("/") || post.emoji.startsWith("data:image")) ? (
-              <div style={{ position: 'relative', width: '100%', maxHeight: '420px', borderRadius: '16px', overflow: 'hidden', marginBottom: '24px', background: 'var(--bg-secondary)', display: 'flex', justifyContent: 'center' }}>
-                <img src={post.emoji} alt={post.title} style={{ width: '100%', maxHeight: '420px', objectFit: 'cover' }} />
+          <header style={{ marginBottom: "36px" }}>
+            {isCustomImage ? (
+              <div
+                style={{
+                  position: "relative",
+                  width: "100%",
+                  maxHeight: "440px",
+                  borderRadius: "16px",
+                  overflow: "hidden",
+                  marginBottom: "24px",
+                  background: "var(--bg-secondary)",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <img
+                  src={post.emoji}
+                  alt={post.title}
+                  style={{ width: "100%", maxHeight: "440px", objectFit: "cover" }}
+                />
               </div>
             ) : (
-              <div style={{ fontSize: '4rem', marginBottom: '20px' }}>{post.emoji}</div>
+              <div style={{ fontSize: "4rem", marginBottom: "20px" }}>{post.emoji}</div>
             )}
-            <h1 style={{ fontSize: '2.5rem', marginBottom: '15px' }}>{post.title}</h1>
-            <div style={{ display: 'flex', gap: '15px', color: 'var(--text-muted)', fontSize: '0.9rem', alignItems: 'center' }}>
-              <span style={{ background: 'var(--accent-primary)', color: '#fff', padding: '4px 12px', borderRadius: '20px' }}>
+
+            <h1
+              style={{
+                fontSize: "2.35rem",
+                lineHeight: 1.25,
+                marginBottom: "16px",
+                color: "var(--text-primary)",
+                fontWeight: 800,
+              }}
+            >
+              {post.title}
+            </h1>
+
+            <div
+              style={{
+                display: "flex",
+                gap: "14px",
+                color: "var(--text-muted)",
+                fontSize: "0.9rem",
+                alignItems: "center",
+                flexWrap: "wrap",
+              }}
+            >
+              <span
+                style={{
+                  background: "var(--accent-primary)",
+                  color: "#fff",
+                  padding: "4px 12px",
+                  borderRadius: "20px",
+                  fontWeight: 600,
+                  fontSize: "0.8rem",
+                }}
+              >
                 {post.tag}
               </span>
               <span>⏱ {post.readTime}</span>
-              <span>📅 {new Date(post.createdAt).toLocaleDateString('es-ES')}</span>
+              <span>📅 {new Date(post.createdAt).toLocaleDateString("es-ES")}</span>
+              <span>✍️ Por Muñeco Tecnology</span>
             </div>
           </header>
 
-          <div style={{ marginBottom: '40px' }}>
+          {/* Full Server-rendered content for Google AdSense & SEO */}
+          <div style={{ marginBottom: "40px" }}>
             <MarkdownRenderer content={post.content} />
           </div>
 
-          {/* Social Share & Like Bar */}
-          <div style={{ margin: '40px 0', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <button 
-                onClick={handleLike}
-                style={{ 
-                  background: 'var(--accent-gradient)', 
-                  border: 'none',
-                  boxShadow: '0 6px 20px var(--accent-glow)',
-                  padding: '14px 34px', 
-                  borderRadius: '50px',
-                  fontSize: '1.05rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  color: '#ffffff',
-                  transition: 'transform 0.2s',
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
-                onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-              >
-                <Heart size={20} fill="white" />
-                <span>Me Gusta</span>
-                <span style={{ background: 'rgba(255,255,255,0.25)', padding: '2px 10px', borderRadius: '20px', fontSize: '0.9rem' }}>
-                  {post.likes}
-                </span>
-              </button>
-            </div>
-
-            {/* Share Buttons */}
-            <ShareButtons
-              title={`${post.title} — Muñeco Tecnology`}
-              description={post.excerpt || `Lee este interesante artículo sobre ${post.tag} en Muñeco Tecnology.`}
-              label="📢 ¿Te gustó este artículo? ¡Compártelo con un clic!"
-            />
-          </div>
+          {/* Interactive like button, social sharing and comments */}
+          <PostInteractions
+            postId={post.id}
+            postTitle={post.title}
+            postExcerpt={post.excerpt}
+            postTag={post.tag}
+            initialLikes={post.likes}
+            initialComments={post.comments.map((c) => ({
+              id: c.id,
+              author: c.author,
+              content: c.content,
+              createdAt: c.createdAt.toISOString(),
+            }))}
+          />
         </article>
-
-        {/* Comments Section */}
-        <section style={{ borderTop: '1px solid var(--border-glass)', paddingTop: '40px', paddingBottom: '80px' }}>
-          <h3 style={{ marginBottom: '20px' }}>Comentarios ({comments.length})</h3>
-          
-          <form onSubmit={handleCommentSubmit} style={{ background: 'var(--bg-secondary)', padding: '24px', borderRadius: '12px', marginBottom: '40px' }}>
-            <h4 style={{ margin: '0 0 15px 0' }}>Deja un comentario</h4>
-            <input
-              type="text"
-              placeholder="Tu nombre"
-              value={newComment.author}
-              onChange={(e) => setNewComment({ ...newComment, author: e.target.value })}
-              required
-              style={inputStyle}
-            />
-            <textarea
-              placeholder="¿Qué te pareció el artículo?"
-              value={newComment.content}
-              onChange={(e) => setNewComment({ ...newComment, content: e.target.value })}
-              required
-              style={{ ...inputStyle, minHeight: '100px', marginTop: '12px' }}
-            />
-            <button 
-              type="submit" 
-              className="btn btn-primary" 
-              disabled={isSubmitting}
-              style={{ marginTop: '12px', opacity: isSubmitting ? 0.7 : 1 }}
-            >
-              {isSubmitting ? 'Enviando...' : 'Publicar comentario'}
-            </button>
-          </form>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            {comments.map(comment => (
-              <div key={comment.id} className="glass" style={{ padding: '20px', borderRadius: '12px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                  <strong style={{ color: 'var(--accent-primary)' }}>{comment.author}</strong>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                    {new Date(comment.createdAt).toLocaleDateString('es-ES')}
-                  </span>
-                </div>
-                <p style={{ margin: 0, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-                  {comment.content}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
       </div>
     </div>
   );
 }
-
-const inputStyle = {
-  width: '100%',
-  padding: '12px 16px',
-  borderRadius: '8px',
-  border: '1px solid var(--border-color)',
-  background: 'var(--bg-card)',
-  color: 'var(--text-primary)',
-  fontFamily: 'inherit',
-  outline: 'none'
-};

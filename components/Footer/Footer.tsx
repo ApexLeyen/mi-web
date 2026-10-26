@@ -12,7 +12,8 @@ const XIcon = ({ size = 15 }: { size?: number }) => (
 );
 
 const quickLinks = [
-  { href: "/#about", label: "Sobre Mí" },
+  { href: "/about", label: "Sobre Nosotros" },
+  { href: "/contact", label: "Contacto" },
   { href: "/#apps", label: "Mis Apps" },
   { href: "/#portfolio", label: "Portafolio" },
   { href: "/blog", label: "Blog y Tutoriales" },
@@ -115,13 +116,13 @@ export default function Footer() {
             <a href="mailto:munecotecnology@gmail.com" className={styles.footerLink} id="footer-email">
               munecotecnology@gmail.com
             </a>
-            <a
-              href="mailto:munecotecnology@gmail.com?subject=Consulta%20de%20Servicios%20-%20Muñeco%20Tecnology"
+            <Link
+              href="/contact"
               className={`btn btn-primary ${styles.contactBtn}`}
               id="footer-contact-btn"
             >
               Contratar servicios
-            </a>
+            </Link>
           </div>
         </div>
 

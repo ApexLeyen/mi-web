@@ -3,16 +3,16 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Sun, Moon, Cpu } from "lucide-react";
+import { Menu, X, Sun, Moon } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider/ThemeProvider";
 import styles from "./Navbar.module.css";
 
 const navLinks = [
-  { href: "/#about", label: "Sobre Mí" },
+  { href: "/about", label: "Sobre Nosotros" },
   { href: "/#apps", label: "Mis Apps" },
   { href: "/#portfolio", label: "Portafolio" },
-  { href: "/#blog", label: "Blog" },
-  { href: "/#contact", label: "Contacto" },
+  { href: "/blog", label: "Blog" },
+  { href: "/contact", label: "Contacto" },
 ];
 
 export default function Navbar() {
