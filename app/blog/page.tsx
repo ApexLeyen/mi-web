@@ -1,5 +1,14 @@
+import type { Metadata } from "next";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Blog y Tutoriales",
+  description: "Artículos técnicos, tutoriales de programación, Android, Kotlin, Next.js e inteligencia artificial en Muñeco Tecnology.",
+  alternates: {
+    canonical: "https://munecotecnology.uk/blog",
+  },
+};
 
 export const dynamic = 'force-dynamic';
 

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Hero from "@/components/Hero/Hero";
 import About from "@/components/About/About";
 import AppsStore from "@/components/AppsStore/AppsStore";
@@ -5,6 +6,12 @@ import Portfolio from "@/components/Portfolio/Portfolio";
 import Blog from "@/components/Blog/Blog";
 import Contact from "@/components/Contact/Contact";
 import prisma from "@/lib/prisma";
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "https://munecotecnology.uk",
+  },
+};
 
 export const dynamic = 'force-dynamic';
 

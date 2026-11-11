@@ -1,4 +1,13 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'Términos y Condiciones',
+  description: 'Términos y condiciones de uso de los servicios, aplicaciones y contenido de Muñeco Tecnology.',
+  alternates: {
+    canonical: 'https://munecotecnology.uk/terms',
+  },
+};
 
 export default function TermsAndConditions() {
   return (

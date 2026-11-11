@@ -25,10 +25,13 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   }
 
   return {
-    title: `${post.title} — Muñeco Tecnology`,
+    title: post.title,
     description: post.excerpt || `Lee ${post.title} en el blog de Muñeco Tecnology.`,
     authors: [{ name: "Muñeco Tecnology" }],
     category: post.tag || "Tecnología",
+    alternates: {
+      canonical: `https://munecotecnology.uk/blog/${post.id}`,
+    },
     openGraph: {
       title: `${post.title} — Muñeco Tecnology`,
       description: post.excerpt || `Tutorial técnico y guía en Muñeco Tecnology.`,

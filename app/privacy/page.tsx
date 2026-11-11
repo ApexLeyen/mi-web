@@ -1,4 +1,13 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'Política de Privacidad',
+  description: 'Política de privacidad, uso de cookies y publicidad de Google AdSense en Muñeco Tecnology.',
+  alternates: {
+    canonical: 'https://munecotecnology.uk/privacy',
+  },
+};
 
 export default function PrivacyPolicy() {
   return (
