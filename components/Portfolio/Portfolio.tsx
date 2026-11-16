@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ExternalLink, GitBranch } from "lucide-react";
+import { GitBranch } from "lucide-react";
+import SmartDownloadButton from "./SmartDownloadButton";
 import styles from "./Portfolio.module.css";
 
 interface Project {
@@ -100,16 +101,12 @@ export default function Portfolio({ initialProjects = [] }: { initialProjects?: 
                 </div>
 
                 <div className={styles.actions}>
-                  <a
-                    href={project.url}
-                    className={`btn btn-primary ${styles.actionBtn}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    id={`project-link-${project.id}`}
-                  >
-                    <ExternalLink size={15} />
-                    Ver proyecto
-                  </a>
+                  <SmartDownloadButton
+                    url={project.url}
+                    projectId={project.id}
+                    projectTitle={project.title}
+                    className={styles.actionBtn}
+                  />
                   <a
                     href={project.github}
                     className={`btn btn-secondary ${styles.actionBtn}`}

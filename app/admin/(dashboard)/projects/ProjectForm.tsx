@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { Sparkles, ExternalLink, GitBranch, Palette, Upload } from "lucide-react";
+import SmartDownloadButton from "@/components/Portfolio/SmartDownloadButton";
 
 interface ProjectFormProps {
   createAction: (formData: FormData) => Promise<void>;
@@ -22,11 +23,29 @@ export default function ProjectForm({ createAction }: ProjectFormProps) {
   const [image, setImage] = useState("🚀");
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("Next.js, TypeScript, Tailwind");
-  const [url, setUrl] = useState("");
+  const [urlMode, setUrlMode] = useState<"single" | "multi">("single");
+  const [singleUrl, setSingleUrl] = useState("");
+  const [urlWindows, setUrlWindows] = useState("");
+  const [urlMacSilicon, setUrlMacSilicon] = useState("");
+  const [urlMacIntel, setUrlMacIntel] = useState("");
+  const [urlAndroid, setUrlAndroid] = useState("");
   const [github, setGithub] = useState("");
   const [color, setColor] = useState("#7c3aed");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+
+  const computedUrl = (() => {
+    if (urlMode === "single") {
+      return singleUrl.trim();
+    }
+    const multi: Record<string, string> = {};
+    if (urlWindows.trim()) multi.windows = urlWindows.trim();
+    if (urlMacSilicon.trim()) multi.macSilicon = urlMacSilicon.trim();
+    if (urlMacIntel.trim()) multi.macIntel = urlMacIntel.trim();
+    if (urlAndroid.trim()) multi.android = urlAndroid.trim();
+    if (singleUrl.trim()) multi.default = singleUrl.trim();
+    return Object.keys(multi).length > 0 ? JSON.stringify(multi) : "";
+  })();
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -266,32 +285,143 @@ export default function ProjectForm({ createAction }: ProjectFormProps) {
           </div>
         </div>
 
-        {/* URLs */}
-        <div className="admin-form-row-2">
-          <div>
-            <label style={labelStyle}>URL del Proyecto / Demo</label>
-            <input
-              type="url"
-              name="url"
-              placeholder="https://mi-proyecto.com"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              required
-              style={inputStyle}
-            />
+        {/* Hidden final url input */}
+        <input type="hidden" name="url" value={computedUrl} />
+
+        {/* Selector de modo de descarga */}
+        <div>
+          <label style={labelStyle}>Opciones de Descarga y Plataformas</label>
+          <div style={{ display: "flex", gap: "10px", marginBottom: "14px" }}>
+            <button
+              type="button"
+              onClick={() => setUrlMode("single")}
+              style={{
+                flex: 1,
+                padding: "10px 14px",
+                borderRadius: "8px",
+                border: "1px solid var(--border-glass)",
+                background: urlMode === "single" ? "var(--accent-primary)" : "var(--bg-card)",
+                color: "white",
+                fontWeight: 600,
+                fontSize: "0.85rem",
+                cursor: "pointer",
+                transition: "background 0.2s",
+              }}
+            >
+              🔗 Enlace Único (Web / Demo)
+            </button>
+            <button
+              type="button"
+              onClick={() => setUrlMode("multi")}
+              style={{
+                flex: 1,
+                padding: "10px 14px",
+                borderRadius: "8px",
+                border: "1px solid var(--border-glass)",
+                background: urlMode === "multi" ? "var(--accent-primary)" : "var(--bg-card)",
+                color: "white",
+                fontWeight: 600,
+                fontSize: "0.85rem",
+                cursor: "pointer",
+                transition: "background 0.2s",
+              }}
+            >
+              🖥️ Multi-Plataforma (Windows / Mac M1-M5 / Intel / Android)
+            </button>
           </div>
-          <div>
-            <label style={labelStyle}>Repositorio GitHub</label>
-            <input
-              type="url"
-              name="github"
-              placeholder="https://github.com/usuario/repo"
-              value={github}
-              onChange={(e) => setGithub(e.target.value)}
-              required
-              style={inputStyle}
-            />
-          </div>
+
+          {urlMode === "single" ? (
+            <div>
+              <input
+                type="url"
+                placeholder="https://drive.google.com/... o https://mi-demo.com"
+                value={singleUrl}
+                onChange={(e) => setSingleUrl(e.target.value)}
+                required={urlMode === "single"}
+                style={inputStyle}
+              />
+              <span style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginTop: "4px", display: "block" }}>
+                Enlace directo al demo web o archivo de descarga único.
+              </span>
+            </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px", background: "var(--bg-card)", padding: "16px", borderRadius: "10px", border: "1px solid var(--border-color)" }}>
+              <div style={{ fontSize: "0.82rem", color: "var(--accent-primary)", fontWeight: 600 }}>
+                💡 Rellena solo las plataformas que tengas disponibles (pueden ser de Drive, MediaFire, Mega, etc.):
+              </div>
+
+              <div>
+                <label style={{ ...labelStyle, fontSize: "0.8rem" }}>🪟 Enlace Windows (.exe / .zip)</label>
+                <input
+                  type="url"
+                  placeholder="https://drive.google.com/.../MiApp-Windows.zip"
+                  value={urlWindows}
+                  onChange={(e) => setUrlWindows(e.target.value)}
+                  style={inputStyle}
+                />
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                <div>
+                  <label style={{ ...labelStyle, fontSize: "0.8rem" }}>🍎 Mac Apple Silicon M1-M5 (.dmg)</label>
+                  <input
+                    type="url"
+                    placeholder="https://drive.google.com/.../MiApp-Mac-AppleSilicon.dmg"
+                    value={urlMacSilicon}
+                    onChange={(e) => setUrlMacSilicon(e.target.value)}
+                    style={inputStyle}
+                  />
+                </div>
+                <div>
+                  <label style={{ ...labelStyle, fontSize: "0.8rem" }}>🍏 Mac Intel x64 (.dmg)</label>
+                  <input
+                    type="url"
+                    placeholder="https://drive.google.com/.../MiApp-Mac-Intel.dmg"
+                    value={urlMacIntel}
+                    onChange={(e) => setUrlMacIntel(e.target.value)}
+                    style={inputStyle}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                <div>
+                  <label style={{ ...labelStyle, fontSize: "0.8rem" }}>🤖 Android (.apk)</label>
+                  <input
+                    type="url"
+                    placeholder="https://drive.google.com/.../MiApp.apk"
+                    value={urlAndroid}
+                    onChange={(e) => setUrlAndroid(e.target.value)}
+                    style={inputStyle}
+                  />
+                </div>
+                <div>
+                  <label style={{ ...labelStyle, fontSize: "0.8rem" }}>🌐 Demo Web (opcional)</label>
+                  <input
+                    type="url"
+                    placeholder="https://mi-demo.com"
+                    value={singleUrl}
+                    onChange={(e) => setSingleUrl(e.target.value)}
+                    style={inputStyle}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Repositorio GitHub */}
+        <div>
+          <label style={labelStyle}>Repositorio GitHub</label>
+          <input
+            type="url"
+            name="github"
+            placeholder="https://github.com/usuario/repo"
+            value={github}
+            onChange={(e) => setGithub(e.target.value)}
+            required
+            style={inputStyle}
+          />
         </div>
 
         <button
@@ -392,12 +522,16 @@ export default function ProjectForm({ createAction }: ProjectFormProps) {
               ))}
             </div>
 
-            <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
-              <div style={{ flex: 1, padding: "8px", background: "var(--accent-primary)", borderRadius: "8px", fontSize: "0.8rem", textAlign: "center", color: "white", fontWeight: 600 }}>
-                <ExternalLink size={13} style={{ display: "inline", verticalAlign: "middle", marginRight: "3px" }} /> Ver demo
+            <div style={{ display: "flex", gap: "8px", marginTop: "8px", alignItems: "flex-start" }}>
+              <div style={{ flex: 1 }}>
+                <SmartDownloadButton
+                  url={computedUrl || "#"}
+                  projectId="preview"
+                  projectTitle={title || "Proyecto"}
+                />
               </div>
-              <div style={{ flex: 1, padding: "8px", background: "var(--bg-secondary)", borderRadius: "8px", fontSize: "0.8rem", textAlign: "center", color: "var(--text-primary)", fontWeight: 500 }}>
-                <GitBranch size={13} style={{ display: "inline", verticalAlign: "middle", marginRight: "3px" }} /> GitHub
+              <div style={{ flex: 1, padding: "9px 12px", background: "var(--bg-secondary)", borderRadius: "8px", fontSize: "0.82rem", textAlign: "center", color: "var(--text-primary)", fontWeight: 500, display: "flex", alignItems: "center", justifyContent: "center", gap: "4px" }}>
+                <GitBranch size={13} /> GitHub
               </div>
             </div>
           </div>

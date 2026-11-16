@@ -41,6 +41,19 @@ export default async function AdminProjects() {
     return val && (val.startsWith("http://") || val.startsWith("https://") || val.startsWith("/") || val.startsWith("data:image"));
   };
 
+  const getProjectLink = (rawUrl: string) => {
+    if (!rawUrl) return "#";
+    if (rawUrl.startsWith("{")) {
+      try {
+        const parsed = JSON.parse(rawUrl);
+        return parsed.default || parsed.windows || parsed.macSilicon || parsed.macIntel || parsed.android || "#";
+      } catch {
+        return "#";
+      }
+    }
+    return rawUrl;
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "36px" }}>
       <div>
@@ -154,14 +167,14 @@ export default async function AdminProjects() {
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid var(--border-color)", paddingTop: "12px", marginTop: "auto" }}>
                     <div style={{ display: "flex", gap: "8px" }}>
                       <a
-                        href={project.url}
+                        href={getProjectLink(project.url)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="btn btn-secondary"
                         style={{ padding: "5px 10px", fontSize: "0.78rem" }}
-                        title="Ver demo"
+                        title="Ver enlace / descarga"
                       >
-                        <ExternalLink size={13} /> Demo
+                        <ExternalLink size={13} /> Enlace
                       </a>
                       <a
                         href={project.github}
