@@ -14,7 +14,7 @@ async function createProject(formData: FormData) {
       image: formData.get("image") as string,
       tags: formData.get("tags") as string,
       url: formData.get("url") as string,
-      github: formData.get("github") as string,
+      github: ((formData.get("github") as string) || "").trim(),
       color: formData.get("color") as string,
     },
   });
@@ -176,16 +176,18 @@ export default async function AdminProjects() {
                       >
                         <ExternalLink size={13} /> Enlace
                       </a>
-                      <a
-                        href={project.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn btn-secondary"
-                        style={{ padding: "5px 10px", fontSize: "0.78rem" }}
-                        title="Ver repositorio GitHub"
-                      >
-                        <GitBranch size={13} /> Repo
-                      </a>
+                      {project.github && project.github.trim() !== "" && (
+                        <a
+                          href={project.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btn btn-secondary"
+                          style={{ padding: "5px 10px", fontSize: "0.78rem" }}
+                          title="Ver repositorio GitHub"
+                        >
+                          <GitBranch size={13} /> Repo
+                        </a>
+                      )}
                     </div>
                     <form action={deleteProject}>
                       <input type="hidden" name="id" value={project.id} />

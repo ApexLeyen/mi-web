@@ -107,16 +107,18 @@ export default function Portfolio({ initialProjects = [] }: { initialProjects?: 
                     projectTitle={project.title}
                     className={styles.actionBtn}
                   />
-                  <a
-                    href={project.github}
-                    className={`btn btn-secondary ${styles.actionBtn}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    id={`project-github-${project.id}`}
-                  >
-                    <GitBranch size={15} />
-                    GitHub
-                  </a>
+                  {project.github && project.github.trim() !== "" && (
+                    <a
+                      href={project.github}
+                      className={`btn btn-secondary ${styles.actionBtn}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      id={`project-github-${project.id}`}
+                    >
+                      <GitBranch size={15} />
+                      GitHub
+                    </a>
+                  )}
                 </div>
               </div>
             </motion.div>

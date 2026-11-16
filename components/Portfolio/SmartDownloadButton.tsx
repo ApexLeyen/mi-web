@@ -192,7 +192,7 @@ export default function SmartDownloadButton({
   const hasMultiple = availablePlatforms.length > 1;
 
   return (
-    <div style={{ position: "relative", width: "100%", display: "flex", flexDirection: "column" }} ref={dropdownRef}>
+    <div style={{ position: "relative", width: "100%", display: "flex", flexDirection: "column", flex: 1 }} ref={dropdownRef}>
       <div style={{ display: "flex", width: "100%", borderRadius: "8px", overflow: "hidden" }}>
         {/* Main button: detected OS download */}
         <a

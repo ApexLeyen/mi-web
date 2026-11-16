@@ -412,14 +412,15 @@ export default function ProjectForm({ createAction }: ProjectFormProps) {
 
         {/* Repositorio GitHub */}
         <div>
-          <label style={labelStyle}>Repositorio GitHub</label>
+          <label style={labelStyle}>
+            Repositorio GitHub <span style={{ fontWeight: "normal", color: "var(--text-muted)", fontSize: "0.8rem" }}>(opcional)</span>
+          </label>
           <input
             type="url"
             name="github"
-            placeholder="https://github.com/usuario/repo"
+            placeholder="https://github.com/usuario/repo (opcional)"
             value={github}
             onChange={(e) => setGithub(e.target.value)}
-            required
             style={inputStyle}
           />
         </div>
@@ -530,9 +531,11 @@ export default function ProjectForm({ createAction }: ProjectFormProps) {
                   projectTitle={title || "Proyecto"}
                 />
               </div>
-              <div style={{ flex: 1, padding: "9px 12px", background: "var(--bg-secondary)", borderRadius: "8px", fontSize: "0.82rem", textAlign: "center", color: "var(--text-primary)", fontWeight: 500, display: "flex", alignItems: "center", justifyContent: "center", gap: "4px" }}>
-                <GitBranch size={13} /> GitHub
-              </div>
+              {github.trim() && (
+                <div style={{ flex: 1, padding: "9px 12px", background: "var(--bg-secondary)", borderRadius: "8px", fontSize: "0.82rem", textAlign: "center", color: "var(--text-primary)", fontWeight: 500, display: "flex", alignItems: "center", justifyContent: "center", gap: "4px" }}>
+                  <GitBranch size={13} /> GitHub
+                </div>
+              )}
             </div>
           </div>
         </div>
