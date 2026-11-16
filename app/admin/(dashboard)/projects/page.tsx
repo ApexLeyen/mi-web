@@ -1,7 +1,8 @@
 import { revalidatePath } from "next/cache";
+import Link from "next/link";
 import prisma from "@/lib/prisma";
 import ProjectForm from "./ProjectForm";
-import { Trash2, ExternalLink, GitBranch, Briefcase } from "lucide-react";
+import { Trash2, ExternalLink, GitBranch, Briefcase, Edit } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
 
@@ -165,7 +166,25 @@ export default async function AdminProjects() {
                   </div>
 
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid var(--border-color)", paddingTop: "12px", marginTop: "auto" }}>
-                    <div style={{ display: "flex", gap: "8px" }}>
+                    <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                      <Link
+                        href={`/admin/projects/${project.id}`}
+                        className="btn btn-primary"
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "4px",
+                          padding: "5px 10px",
+                          fontSize: "0.78rem",
+                          background: "var(--accent-primary)",
+                          color: "white",
+                          borderRadius: "6px",
+                          textDecoration: "none",
+                        }}
+                        title="Editar proyecto y enlaces"
+                      >
+                        <Edit size={13} /> Editar
+                      </Link>
                       <a
                         href={getProjectLink(project.url)}
                         target="_blank"

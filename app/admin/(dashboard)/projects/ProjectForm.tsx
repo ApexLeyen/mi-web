@@ -4,8 +4,20 @@ import { useState, useRef } from "react";
 import { Sparkles, ExternalLink, GitBranch, Palette, Upload } from "lucide-react";
 import SmartDownloadButton from "@/components/Portfolio/SmartDownloadButton";
 
+export interface ProjectFormData {
+  id: string;
+  title: string;
+  image: string;
+  description: string;
+  tags: string;
+  url: string;
+  github: string;
+  color: string;
+}
+
 interface ProjectFormProps {
   createAction: (formData: FormData) => Promise<void>;
+  initialData?: ProjectFormData;
 }
 
 const colorPresets = [
@@ -18,19 +30,34 @@ const colorPresets = [
   "#3b82f6", // Blue
 ];
 
-export default function ProjectForm({ createAction }: ProjectFormProps) {
-  const [title, setTitle] = useState("");
-  const [image, setImage] = useState("🚀");
-  const [description, setDescription] = useState("");
-  const [tags, setTags] = useState("Next.js, TypeScript, Tailwind");
-  const [urlMode, setUrlMode] = useState<"single" | "multi">("single");
-  const [singleUrl, setSingleUrl] = useState("");
-  const [urlWindows, setUrlWindows] = useState("");
-  const [urlMacSilicon, setUrlMacSilicon] = useState("");
-  const [urlMacIntel, setUrlMacIntel] = useState("");
-  const [urlAndroid, setUrlAndroid] = useState("");
-  const [github, setGithub] = useState("");
-  const [color, setColor] = useState("#7c3aed");
+export default function ProjectForm({ createAction, initialData }: ProjectFormProps) {
+  const isEdit = !!initialData;
+  const [title, setTitle] = useState(initialData?.title ?? "");
+  const [image, setImage] = useState(initialData?.image ?? "🚀");
+  const [description, setDescription] = useState(initialData?.description ?? "");
+  const [tags, setTags] = useState(initialData?.tags ?? "Next.js, TypeScript, Tailwind");
+
+  // Parse initial multi-platform or single URL
+  const initialMulti = (() => {
+    const raw = initialData?.url?.trim() || "";
+    if (raw.startsWith("{") && raw.endsWith("}")) {
+      try {
+        return JSON.parse(raw) as Record<string, string>;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  })();
+
+  const [urlMode, setUrlMode] = useState<"single" | "multi">(initialMulti ? "multi" : "single");
+  const [singleUrl, setSingleUrl] = useState(initialMulti ? (initialMulti.default || "") : (initialData?.url ?? ""));
+  const [urlWindows, setUrlWindows] = useState(initialMulti?.windows || "");
+  const [urlMacSilicon, setUrlMacSilicon] = useState(initialMulti?.macSilicon || "");
+  const [urlMacIntel, setUrlMacIntel] = useState(initialMulti?.macIntel || "");
+  const [urlAndroid, setUrlAndroid] = useState(initialMulti?.android || "");
+  const [github, setGithub] = useState(initialData?.github ?? "");
+  const [color, setColor] = useState(initialData?.color ?? "#7c3aed");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
 
@@ -119,10 +146,14 @@ export default function ProjectForm({ createAction }: ProjectFormProps) {
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <h3 style={{ margin: 0, fontSize: "1.2rem", display: "flex", alignItems: "center", gap: "8px" }}>
-            <Sparkles size={18} color="var(--accent-primary)" /> Añadir Nuevo Proyecto
+            <Sparkles size={18} color="var(--accent-primary)" /> {isEdit ? "Editar Proyecto" : "Añadir Nuevo Proyecto"}
           </h3>
-          <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>Se mostrará en tu portafolio</span>
+          <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
+            {isEdit ? "Modifica los datos y enlaces del proyecto" : "Se mostrará en tu portafolio"}
+          </span>
         </div>
+
+        {isEdit && <input type="hidden" name="id" value={initialData.id} />}
 
         {/* Título */}
         <div>
@@ -431,7 +462,9 @@ export default function ProjectForm({ createAction }: ProjectFormProps) {
           disabled={isSubmitting}
           style={{ padding: "14px", fontSize: "1rem", marginTop: "6px", width: "100%", justifyContent: "center" }}
         >
-          {isSubmitting ? "Publicando proyecto..." : "💼 Publicar Proyecto"}
+          {isSubmitting
+            ? (isEdit ? "Guardando cambios..." : "Publicando proyecto...")
+            : (isEdit ? "💾 Guardar Cambios" : "💼 Publicar Proyecto")}
         </button>
       </form>
 
