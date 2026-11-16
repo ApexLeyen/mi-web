@@ -82,7 +82,7 @@ export default async function AdminProjects() {
                 <div
                   style={{
                     position: "relative",
-                    height: "120px",
+                    height: "170px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -91,11 +91,39 @@ export default async function AdminProjects() {
                   }}
                 >
                   {isImageUrl(project.image) ? (
-                    <img src={project.image} alt={project.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    <>
+                      <img
+                        src={project.image}
+                        alt=""
+                        aria-hidden="true"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          filter: "blur(14px) opacity(0.35)",
+                          transform: "scale(1.2)",
+                        }}
+                      />
+                      <img
+                        src={project.image}
+                        alt={project.title}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "contain",
+                          position: "relative",
+                          zIndex: 1,
+                          padding: "8px",
+                        }}
+                      />
+                    </>
                   ) : (
-                    <span style={{ fontSize: "3rem" }}>{project.image || "💼"}</span>
+                    <span style={{ fontSize: "3rem", zIndex: 1 }}>{project.image || "💼"}</span>
                   )}
-                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "3px", background: project.color }} />
+                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "3px", background: project.color, zIndex: 2 }} />
                 </div>
 
                 <div style={{ padding: "18px", display: "flex", flexDirection: "column", gap: "10px", flex: 1 }}>

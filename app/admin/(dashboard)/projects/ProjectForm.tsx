@@ -322,7 +322,7 @@ export default function ProjectForm({ createAction }: ProjectFormProps) {
           <div
             style={{
               position: "relative",
-              height: "130px",
+              height: "190px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -331,11 +331,41 @@ export default function ProjectForm({ createAction }: ProjectFormProps) {
             }}
           >
             {isImageUrl(image) ? (
-              <img src={image} alt="Preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => { (e.target as any).src = "/logo.png"; }} />
+              <>
+                <img
+                  src={image}
+                  alt=""
+                  aria-hidden="true"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    filter: "blur(14px) opacity(0.35)",
+                    transform: "scale(1.2)",
+                  }}
+                  onError={(e) => { (e.target as any).style.display = "none"; }}
+                />
+                <img
+                  src={image}
+                  alt="Preview"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "contain",
+                    position: "relative",
+                    zIndex: 1,
+                    padding: "8px",
+                  }}
+                  onError={(e) => { (e.target as any).src = "/logo.png"; }}
+                />
+              </>
             ) : (
-              <span style={{ fontSize: "3.5rem" }}>{image || "💼"}</span>
+              <span style={{ fontSize: "3.5rem", zIndex: 1 }}>{image || "💼"}</span>
             )}
-            <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "3px", background: color }} />
+            <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "3px", background: color, zIndex: 2 }} />
           </div>
 
           <div style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "10px" }}>

@@ -14,11 +14,12 @@
 
 .cardVisual {
   position: relative;
-  height: 140px;
+  height: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.25);
 }
 
 .projectEmoji { font-size: 4rem; z-index: 1; }

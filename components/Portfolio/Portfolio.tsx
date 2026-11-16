@@ -51,17 +51,41 @@ export default function Portfolio({ initialProjects = [] }: { initialProjects?: 
                 style={{ background: `linear-gradient(135deg, ${project.color}22, ${project.color}44)` }}
               >
                 {(project.image.startsWith("http") || project.image.startsWith("/") || project.image.startsWith("data:image")) ? (
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", top: 0, left: 0 }}
-                  />
+                  <>
+                    <img
+                      src={project.image}
+                      alt=""
+                      aria-hidden="true"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        filter: "blur(14px) opacity(0.35)",
+                        transform: "scale(1.2)",
+                      }}
+                    />
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "contain",
+                        position: "relative",
+                        zIndex: 1,
+                        padding: "8px",
+                      }}
+                    />
+                  </>
                 ) : (
                   <span className={styles.projectEmoji}>{project.image}</span>
                 )}
                 <div
                   className={styles.colorBar}
-                  style={{ background: project.color }}
+                  style={{ background: project.color, zIndex: 2 }}
                 />
               </div>
 
