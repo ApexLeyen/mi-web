@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Download, ExternalLink, ChevronDown, Check } from "lucide-react";
+import { Download, ExternalLink, ChevronDown, Check, X } from "lucide-react";
 
 export interface PlatformDownloads {
   default?: string;
@@ -128,18 +128,27 @@ export default function SmartDownloadButton({
     setDetectedPlatform(detectUserPlatform());
   }, []);
 
-  // Close dropdown on click outside
+  // Close dropdown on click outside or Escape
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
         setDropdownOpen(false);
       }
     };
     if (dropdownOpen) {
       document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside);
+      document.addEventListener("keydown", handleKeyDown);
     }
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, [dropdownOpen]);
 
@@ -226,7 +235,11 @@ export default function SmartDownloadButton({
         {hasMultiple && (
           <button
             type="button"
-            onClick={() => setDropdownOpen(!dropdownOpen)}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setDropdownOpen((prev) => !prev);
+            }}
             aria-label="Ver todas las opciones de descarga"
             style={{
               background: "var(--accent-primary)",
@@ -258,7 +271,11 @@ export default function SmartDownloadButton({
       {hasMultiple && (
         <button
           type="button"
-          onClick={() => setDropdownOpen(!dropdownOpen)}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setDropdownOpen((prev) => !prev);
+          }}
           style={{
             background: "none",
             border: "none",
@@ -276,44 +293,78 @@ export default function SmartDownloadButton({
           onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-muted)")}
         >
           <span>Detectado: <strong>{PLATFORM_META[detectedPlatform]?.short || "Tu sistema"}</strong></span>
-          <span style={{ opacity: 0.6 }}>• ¿Cambiar plataforma? ▾</span>
+          <span style={{ opacity: 0.9, color: "var(--accent-primary)", fontWeight: 600 }}>• ¿Cambiar plataforma? ▾</span>
         </button>
       )}
 
-      {/* Multi-platform Dropdown Menu */}
+      {/* Multi-platform Dropdown Menu (Opens upward so it is never clipped by card bottom) */}
       {dropdownOpen && (
         <div
           className="glass"
           style={{
             position: "absolute",
-            top: "calc(100% + 6px)",
+            bottom: "calc(100% + 8px)",
             left: 0,
             right: 0,
-            zIndex: 50,
-            borderRadius: "12px",
-            padding: "8px",
-            background: "var(--bg-secondary)",
-            border: "1px solid var(--border-glass)",
-            boxShadow: "0 12px 36px rgba(0,0,0,0.4)",
+            zIndex: 9999,
+            borderRadius: "14px",
+            padding: "10px",
+            background: "#161626",
+            border: "1px solid var(--accent-primary)",
+            boxShadow: "0 -10px 36px rgba(0,0,0,0.7), 0 0 24px rgba(124, 58, 237, 0.25)",
             display: "flex",
             flexDirection: "column",
-            gap: "4px",
-            minWidth: "220px",
+            gap: "6px",
+            minWidth: "240px",
+            maxHeight: "320px",
+            overflowY: "auto",
           }}
         >
           <div
             style={{
-              padding: "6px 8px 4px 8px",
-              fontSize: "0.72rem",
-              fontWeight: 700,
-              textTransform: "uppercase",
-              letterSpacing: "0.5px",
-              color: "var(--text-muted)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "4px 6px 8px 6px",
               borderBottom: "1px solid var(--border-color)",
               marginBottom: "4px",
             }}
           >
-            Elige tu plataforma
+            <span
+              style={{
+                fontSize: "0.74rem",
+                fontWeight: 700,
+                textTransform: "uppercase",
+                letterSpacing: "0.6px",
+                color: "var(--accent-primary)",
+                display: "flex",
+                alignItems: "center",
+                gap: "5px",
+              }}
+            >
+              <span>🚀</span> Descargar para:
+            </span>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setDropdownOpen(false);
+              }}
+              style={{
+                background: "rgba(255, 255, 255, 0.08)",
+                border: "none",
+                borderRadius: "6px",
+                color: "var(--text-muted)",
+                cursor: "pointer",
+                padding: "4px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              aria-label="Cerrar opciones"
+            >
+              <X size={14} />
+            </button>
           </div>
 
           {availablePlatforms.map((key) => {
@@ -332,30 +383,31 @@ export default function SmartDownloadButton({
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
-                  padding: "8px 10px",
+                  padding: "9px 12px",
                   borderRadius: "8px",
                   textDecoration: "none",
                   color: isCurrent ? "var(--accent-primary)" : "var(--text-primary)",
-                  background: isCurrent ? "rgba(124, 58, 237, 0.12)" : "transparent",
+                  background: isCurrent ? "rgba(124, 58, 237, 0.18)" : "var(--bg-card)",
+                  border: isCurrent ? "1px solid var(--accent-primary)" : "1px solid rgba(255, 255, 255, 0.08)",
                   fontSize: "0.84rem",
-                  transition: "background 0.15s",
+                  transition: "background 0.15s, border-color 0.15s",
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.background = isCurrent
-                    ? "rgba(124, 58, 237, 0.2)"
-                    : "var(--bg-card)";
+                    ? "rgba(124, 58, 237, 0.28)"
+                    : "rgba(255, 255, 255, 0.12)";
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = isCurrent
-                    ? "rgba(124, 58, 237, 0.12)"
-                    : "transparent";
+                    ? "rgba(124, 58, 237, 0.18)"
+                    : "var(--bg-card)";
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <span style={{ fontSize: "1.1rem" }}>{meta.icon}</span>
+                  <span style={{ fontSize: "1.15rem" }}>{meta.icon}</span>
                   <div>
-                    <div style={{ fontWeight: 600 }}>{meta.short}</div>
-                    <div style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{meta.badge}</div>
+                    <div style={{ fontWeight: 600, lineHeight: 1.2 }}>{meta.short}</div>
+                    <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginTop: "2px" }}>{meta.badge}</div>
                   </div>
                 </div>
 
@@ -364,17 +416,17 @@ export default function SmartDownloadButton({
                     <span
                       style={{
                         fontSize: "0.68rem",
-                        padding: "2px 6px",
+                        padding: "2px 7px",
                         borderRadius: "10px",
                         background: "var(--accent-primary)",
                         color: "white",
                         fontWeight: 600,
                       }}
                     >
-                      Detectado
+                      Tu sistema
                     </span>
                   )}
-                  <Download size={14} style={{ opacity: 0.7 }} />
+                  <Download size={15} style={{ opacity: isCurrent ? 1 : 0.7, color: isCurrent ? "var(--accent-primary)" : undefined }} />
                 </div>
               </a>
             );

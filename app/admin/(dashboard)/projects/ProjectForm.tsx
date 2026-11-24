@@ -477,7 +477,7 @@ export default function ProjectForm({ createAction, initialData }: ProjectFormPr
           className="glass"
           style={{
             borderRadius: "16px",
-            overflow: "hidden",
+            overflow: "visible",
             background: "var(--bg-card)",
             border: "1px solid var(--border-glass)",
             boxShadow: "0 8px 30px rgba(0,0,0,0.2)",
@@ -492,6 +492,8 @@ export default function ProjectForm({ createAction, initialData }: ProjectFormPr
               justifyContent: "center",
               background: `linear-gradient(135deg, ${color}22, ${color}44)`,
               overflow: "hidden",
+              borderTopLeftRadius: "16px",
+              borderTopRightRadius: "16px",
             }}
           >
             {isImageUrl(image) ? (

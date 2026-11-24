@@ -87,7 +87,7 @@ export default async function AdminProjects() {
                   background: "var(--bg-secondary)",
                   borderRadius: "14px",
                   border: "1px solid var(--border-glass)",
-                  overflow: "hidden",
+                  overflow: "visible",
                   display: "flex",
                   flexDirection: "column",
                 }}
@@ -102,6 +102,8 @@ export default async function AdminProjects() {
                     justifyContent: "center",
                     background: `linear-gradient(135deg, ${project.color}22, ${project.color}44)`,
                     overflow: "hidden",
+                    borderTopLeftRadius: "14px",
+                    borderTopRightRadius: "14px",
                   }}
                 >
                   {isImageUrl(project.image) ? (
